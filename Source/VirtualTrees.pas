@@ -24,6 +24,9 @@ unit VirtualTrees;
 // (C) 1999-2001 digital publishing AG. All Rights Reserved.
 //----------------------------------------------------------------------------------------------------------------------
 //
+//  September 2011
+//   - Improvement: Minor code improvements
+//   - Support for flat scroll bars has been removed.
 //  April 2011
 //   - Bug fix: Reverted change of November 2010 (Creating the WorkerThread will no longer change System.IsMultiThread)
 //              it caused sporadic AVs during app start which disappeared after revering the change. This code can lead to a wrong value 
@@ -692,7 +695,6 @@ type
 
   TScrollBarStyle = (
     sbmRegular,
-    sbmFlat,
     sbm3D
   );
 
@@ -4155,9 +4157,6 @@ implementation
 uses
   Consts, Math,
   AxCtrls,                 // TOLEStream
-  {$ifdef UseFlatScrollbars}
-    FlatSB,                // wrapper for systems without flat SB support
-  {$endif UseFlatScrollbars}
   MMSystem,                // for animation timer (does not include further resources)
   TypInfo,                 // for migration stuff
   ActnList,
@@ -4273,14 +4272,6 @@ const
                         // this chunk is immediately followed by all child nodes
   CaptionChunk = 3;     // used by the string tree to store a node's caption
   UserChunk = 4;        // used for data supplied by the application
-
-  {$ifdef UseFlatScrollbars}
-    ScrollBarProp: array[TScrollBarStyle] of Integer = (
-      FSB_REGULAR_MODE,
-      FSB_FLAT_MODE,
-      FSB_ENCARTA_MODE
-    );
-  {$endif}
 
   {$ifndef COMPILER_11_UP}
     const
@@ -13768,23 +13759,9 @@ end;
 procedure TScrollBarOptions.SetScrollBarStyle(Value: TScrollBarStyle);
 
 begin
-  {$ifndef UseFlatScrollbars}
-    Assert(Value = sbmRegular, 'Flat scrollbars styles are disabled. Enable UseFlatScrollbars in VTConfig.inc for' +
-      'flat scrollbar support.');
-  {$endif UseFlatScrollbars}
-
   if FScrollBarStyle <> Value then
   begin
     FScrollBarStyle := Value;
-    {$ifdef UseFlatScrollbars}
-      if FOwner.HandleAllocated then
-      begin
-        // If set to regular style then don't use the emulation mode of the FlatSB APIs but the original APIs.
-        // This is necessary because the FlatSB APIs don't respect NC paint request with limited update region
-        // (which is necessary for the transparent drag image).
-        FOwner.RecreateWnd;
-      end;
-    {$endif UseFlatScrollbars}
   end;
 end;
 
@@ -18211,11 +18188,7 @@ procedure TBaseVirtualTree.WMHScroll(var Message: TWMHScroll);
     SI.cbSize := SizeOf(TScrollInfo);
     SI.fMask := SIF_TRACKPOS;
     Code := SB_HORZ;
-    {$ifdef UseFlatScrollbars}
-      FlatSB_GetScrollInfo(Handle, Code, SI);
-    {$else}
-      GetScrollInfo(Handle, Code, SI);
-    {$endif UseFlatScrollbars}
+    GetScrollInfo(Handle, Code, SI);
     Result := SI.nTrackPos;
   end;
 
@@ -19527,11 +19500,7 @@ procedure TBaseVirtualTree.WMVScroll(var Message: TWMVScroll);
     SI.cbSize := SizeOf(TScrollInfo);
     SI.fMask := SIF_TRACKPOS;
     Code := SB_VERT;
-    {$ifdef UseFlatScrollbars}
-      FlatSB_GetScrollInfo(Handle, Code, SI);
-    {$else}
-      GetScrollInfo(Handle, Code, SI);
-    {$endif UseFlatScrollbars}
+    GetScrollInfo(Handle, Code, SI);
     Result := SI.nTrackPos;
   end;
 
@@ -20251,16 +20220,6 @@ begin
     FHeader.RescaleHeader;
   if hoAutoResize in FHeader.FOptions then
     FHeader.FColumns.AdjustAutoSize(InvalidColumn);
-
-  // Initialize flat scroll bar library if required.
-  {$ifdef UseFlatScrollbars}
-    if FScrollBarOptions.FScrollBarStyle <> sbmRegular then
-    begin
-      InitializeFlatSB(Handle);
-      FlatSB_SetScrollProp(Handle, WSB_PROP_HSTYLE, ScrollBarProp[FScrollBarOptions.ScrollBarStyle], False);
-      FlatSB_SetScrollProp(Handle, WSB_PROP_VSTYLE, ScrollBarProp[FScrollBarOptions.ScrollBarStyle], False);
-    end;
-  {$endif UseFlatScrollbars}
 
   PrepareBitmaps(True, True);
 
@@ -22069,12 +22028,7 @@ end;
 procedure TBaseVirtualTree.DoShowScrollbar(Bar: Integer; Show: Boolean);
 
 begin
-  {$ifdef UseFlatScrollbars}
-    FlatSB_ShowScrollBar(Handle, Bar, Show);
-  {$else}
-    ShowScrollBar(Handle, Bar, Show);
-  {$endif UseFlatScrollbars};
-
+  ShowScrollBar(Handle, Bar, Show);
   if Assigned(FOnShowScrollbar) then
     FOnShowScrollbar(Self, Bar, Show);
 end;
@@ -33163,11 +33117,7 @@ begin
     ZeroMemory (@ScrollInfo, SizeOf(ScrollInfo));
     ScrollInfo.cbSize := SizeOf(ScrollInfo);
     ScrollInfo.fMask := SIF_ALL;
-    {$ifdef UseFlatScrollbars}
-      FlatSB_GetScrollInfo(Handle, SB_HORZ, ScrollInfo);
-    {$else}
-      GetScrollInfo(Handle, SB_HORZ, ScrollInfo);
-    {$endif UseFlatScrollbars}
+    GetScrollInfo(Handle, SB_HORZ, ScrollInfo);
 
     if (Integer(FRangeX) > ClientWidth) or FScrollBarOptions.AlwaysVisible then
     begin
@@ -33179,11 +33129,7 @@ begin
       ScrollInfo.nPage := Max(0, ClientWidth + 1);
 
       ScrollInfo.fMask := SIF_ALL or ScrollMasks[FScrollBarOptions.AlwaysVisible];
-      {$ifdef UseFlatScrollbars}
-        FlatSB_SetScrollInfo(Handle, SB_HORZ, ScrollInfo, DoRepaint);
-      {$else}
-        SetScrollInfo(Handle, SB_HORZ, ScrollInfo, DoRepaint);
-      {$endif UseFlatScrollbars}
+      SetScrollInfo(Handle, SB_HORZ, ScrollInfo, DoRepaint);
     end
     else
     begin
@@ -33192,20 +33138,12 @@ begin
       ScrollInfo.nPos := 0;
       ScrollInfo.nPage := 0;
       DoShowScrollBar(SB_HORZ, False);
-      {$ifdef UseFlatScrollbars}
-        FlatSB_SetScrollInfo(Handle, SB_HORZ, ScrollInfo, False);
-      {$else}
-        SetScrollInfo(Handle, SB_HORZ, ScrollInfo, False);
-      {$endif UseFlatScrollbars}
+      SetScrollInfo(Handle, SB_HORZ, ScrollInfo, False);
     end;
 
     // Since the position is automatically changed if it doesn't meet the range
     // we better read the current position back to stay synchronized.
-    {$ifdef UseFlatScrollbars}
-      FEffectiveOffsetX := FlatSB_GetScrollPos(Handle, SB_HORZ);
-    {$else}
-      FEffectiveOffsetX := GetScrollPos(Handle, SB_HORZ);
-    {$endif UseFlatScrollbars}
+    FEffectiveOffsetX := GetScrollPos(Handle, SB_HORZ);
     if UseRightToLeftAlignment then
       SetOffsetX(-Integer(FRangeX) + ClientWidth + FEffectiveOffsetX)
     else
@@ -33271,11 +33209,7 @@ begin
   begin
     ScrollInfo.cbSize := SizeOf(ScrollInfo);
     ScrollInfo.fMask := SIF_ALL;
-    {$ifdef UseFlatScrollbars}
-      FlatSB_GetScrollInfo(Handle, SB_VERT, ScrollInfo);
-    {$else}
-      GetScrollInfo(Handle, SB_VERT, ScrollInfo);
-    {$endif UseFlatScrollbars}
+    GetScrollInfo(Handle, SB_VERT, ScrollInfo);
 
     if (Integer(FRangeY) > ClientHeight) or FScrollBarOptions.AlwaysVisible then
     begin
@@ -33287,11 +33221,7 @@ begin
       ScrollInfo.nPage := Max(0, ClientHeight + 1);
 
       ScrollInfo.fMask := SIF_ALL or ScrollMasks[FScrollBarOptions.AlwaysVisible];
-      {$ifdef UseFlatScrollbars}
-        FlatSB_SetScrollInfo(Handle, SB_VERT, ScrollInfo, DoRepaint);
-      {$else}
-        SetScrollInfo(Handle, SB_VERT, ScrollInfo, DoRepaint);
-      {$endif UseFlatScrollbars}
+      SetScrollInfo(Handle, SB_VERT, ScrollInfo, DoRepaint);
     end
     else
     begin
@@ -33300,20 +33230,12 @@ begin
       ScrollInfo.nPos := 0;
       ScrollInfo.nPage := 0;
       DoShowScrollBar(SB_VERT, False);
-      {$ifdef UseFlatScrollbars}
-        FlatSB_SetScrollInfo(Handle, SB_VERT, ScrollInfo, False);
-      {$else}
-        SetScrollInfo(Handle, SB_VERT, ScrollInfo, False);
-      {$endif UseFlatScrollbars}
+      SetScrollInfo(Handle, SB_VERT, ScrollInfo, False);
     end;
 
     // Since the position is automatically changed if it doesn't meet the range
     // we better read the current position back to stay synchronized.
-    {$ifdef UseFlatScrollbars}
-      SetOffsetY(-FlatSB_GetScrollPos(Handle, SB_VERT));
-    {$else}
-      SetOffsetY(-GetScrollPos(Handle, SB_VERT));
-    {$endif UseFlatScrollBars}
+    SetOffsetY(-GetScrollPos(Handle, SB_VERT));
   end
   else
   begin
