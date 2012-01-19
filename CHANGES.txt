@@ -1,3 +1,5 @@
+January 2012
+ - Bug fix: Fixed a potential access violation in TBaseVirtualTree.FullCollapse in case of toChildrenAbove
 September 2011
  - The property EmptyListMessage may now contain linebreaks in Delphi 2009 and higher, the text in now printed in dark gray.
  - Support for flat scroll bars has been removed.
