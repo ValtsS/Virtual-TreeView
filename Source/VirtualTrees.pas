@@ -5367,7 +5367,8 @@ begin
 
     try
       Assert(Images.Height > 0, 'Internal image "' + ImageName + '" is missing or corrupt.');
-
+      if Images.Height = 0 then
+        Exit;// This should never happen, it prevents a division by zero exception below in the for loop, which we have seen in a few cases
       // It is assumed that the image height determines also the width of one entry in the image list.
       IL.Clear;
       IL.Height := Images.Height;
@@ -14931,7 +14932,7 @@ begin
         else
           AddToSelection(NewNode);
     end;
-    Update;//Invalidate didn't update owner drawn selections
+    Invalidate();
   end
   else
     // Shift key down
@@ -24970,8 +24971,11 @@ var
 begin
   if tsUseExplorerTheme in FStates then
   begin
-    Theme := OpenThemeData(Handle, 'TREEVIEW');
-    RowRect := Rect(0, PaintInfo.CellRect.Top, Max(FRangeX, ClientWidth), PaintInfo.CellRect.Bottom);
+    
+    Theme := OpenThemeData(Handle, 'Explorer::TreeView');
+    RowRect := Rect(0, PaintInfo.CellRect.Top, FRangeX, PaintInfo.CellRect.Bottom);
+    if (Header.Columns.Count = 0) and (toFullRowSelect in TreeOptions.SelectionOptions) then
+      RowRect.Right := ClientWidth;
     if toShowVertGridLines in FOptions.PaintOptions then
       Dec(RowRect.Right);
   end;
@@ -33088,6 +33092,7 @@ var
   EndEdit: Boolean;
   Tree: TBaseVirtualTree;
   NextNode: PVirtualNode;
+  KeyState: TKeyboardState;
 begin
   Tree := FLink.FTree;
   case Message.CharCode of
@@ -33135,6 +33140,14 @@ begin
           Tree.FocusedNode := NextNode;
           if Tree.CanEdit(Tree.FocusedNode, Tree.FocusedColumn) then
             Tree.DoEdit;
+        end;
+      end;
+    Ord('A'):
+      begin
+        GetKeyboardState(KeyState);
+        if Tree.IsEditing and (ssCtrl in KeyboardStateToShiftState(KeyState)) then begin
+          Self.SelectAll();
+          Message.CharCode := 0;
         end;
       end;
   else
