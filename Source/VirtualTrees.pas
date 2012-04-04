@@ -7997,7 +7997,7 @@ begin
       DragInfo.ptOffset.y := Height div 2;
       DragInfo.hbmpDragImage := CopyImage(DragImage.Handle, IMAGE_BITMAP, Width, Height, LR_COPYRETURNORG);
       DragInfo.crColorKey := ColorToRGB(FColorKey);
-      if not Succeeded(DragSourceHelper.InitializeFromBitmap(DragInfo, DataObject)) then
+      if not Succeeded(DragSourceHelper.InitializeFromBitmap(@DragInfo, DataObject)) then
       begin
         DeleteObject(DragInfo.hbmpDragImage);
         Exclude(FStates, disSystemSupport);
