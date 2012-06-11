@@ -60,8 +60,7 @@ interface
 // For some things to work we need code, which is classified as being unsafe for .NET.
 {$ifdef COMPILER_7_UP}
   {$warn UNSAFE_TYPE off}
-  {$warn UNSAFE_CAST off}
-  {$warn UNSAFE_CODE off}
+  {$warn UNSAFE_CODE of f}
 {$endif COMPILER_7_UP}
 
 {$ifdef COMPILER_12_UP}
@@ -70,7 +69,7 @@ interface
 {$endif COMPILER_12_UP}
 
 {$HPPEMIT '#include <objidl.h>'}
-{$HPPEMIT '#include <oleidl.h>'} // Necessary for BCB 6 SP 2.
+{$HPPEMIT '#include <oleidl.h>'}
 {$HPPEMIT '#include <oleacc.h>'}
 {$HPPEMIT '#include <ShlObj.hpp>'}
 
@@ -33168,7 +33167,7 @@ var
   LastFont: THandle;
 
 begin
-  if not (vsMultiline in FLink.FNode.States) then
+  if not (vsMultiline in FLink.FNode.States) and not (toGridExtensions in FLink.FTree.FOptions.FMiscOptions{see issue #252}) then
   begin
     // avoid flicker
     SendMessage(Handle, WM_SETREDRAW, 0, 0);
