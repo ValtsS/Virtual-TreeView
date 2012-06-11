@@ -19854,7 +19854,7 @@ begin
     end;
   end;
 
-  if Offset < Indent then
+  if Offset < (Indent + Margin{See issue #259}) then
   begin
     // Position is to the left of calculated indentation which can only happen for the main column.
     // Check whether it corresponds to a button/checkbox.
