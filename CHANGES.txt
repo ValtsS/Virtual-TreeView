@@ -1,5 +1,5 @@
  - Bug fix: Functions GetLastVisible and GetLastVisibleNoInit return correct results even if some anchestor of the last visible node is not effectively visible
- - Improvement: Added functions GetNextSiblingnNoInit and GetPreviousSiblingNoInit
+ - Improvement: Added functions GetNextSiblingNoInit and GetPreviousSiblingNoInit
 March 2012
 - Fixed painting of Windows7/Vista style Explorer selection in case tsUseExplorerTheme is in TreeOptions
 - Ctrl + A now selects all items
