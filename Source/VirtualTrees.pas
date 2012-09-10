@@ -33677,6 +33677,7 @@ var
   R: TRect;
   DrawFormat: Cardinal;
   Size: TSize;
+  Height: Integer;
 
 begin
   InitializeTextProperties(PaintInfo);
@@ -33684,6 +33685,7 @@ begin
   begin
     R := ContentRect;
     Canvas.TextFlags := 0;
+    InflateRect(R, -FTextMargin, 0);
 
     // Multiline nodes don't need special font handling or text manipulation.
     // Note: multiline support requires the Unicode version of DrawText, which is able to do word breaking.
@@ -33692,7 +33694,7 @@ begin
     //       for 9x/Me.
     if vsMultiline in Node.States then
     begin
-      InflateRect(R, -FTextMargin, 0);
+      Height := ComputeNodeHeight(Canvas, Node, Column);
       DoPaintText(Node, Canvas, Column, ttNormal);
       // Disabled node color overrides all other variants.
       if (vsDisabled in Node.States) or not Enabled then
@@ -33703,10 +33705,13 @@ begin
       DrawFormat := DT_NOPREFIX or DT_WORDBREAK or DT_END_ELLIPSIS or DT_EDITCONTROL or AlignmentToDrawFlag[Alignment];
       if BidiMode <> bdLeftToRight then
         DrawFormat := DrawFormat or DT_RTLREADING;
+
+      // Center the text vertically if it fits entirely into the content rect.
+      if R.Bottom - R.Top > Height then
+        InflateRect(R, 0, (Height - R.Bottom - R.Top) div 2);
     end
     else
     begin
-      InflateRect(R, -FTextMargin, 0);
       FFontChanged := False;
       TripleWidth := FEllipsisWidth;
       DoPaintText(Node, Canvas, Column, ttNormal);
