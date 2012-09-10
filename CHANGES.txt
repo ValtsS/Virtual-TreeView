@@ -1,5 +1,6 @@
 September 10, 2012
  - Fixed issue #66: column auto-resize makes not aware of StaticText
+ - Fixed issue #53: Misalignment Images Columns > 0
 
  - Bug fix: Functions GetLastVisible and GetLastVisibleNoInit return correct results even if some anchestor of the last visible node is not effectively visible
  - Improvement: Added functions GetNextSiblingNoInit and GetPreviousSiblingNoInit
