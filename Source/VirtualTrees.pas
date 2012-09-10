@@ -19761,8 +19761,9 @@ var
 begin
   ImageHit := HitInfo.HitPositions * [hiOnNormalIcon, hiOnStateIcon] <> [];
   LabelHit := hiOnItemLabel in HitInfo.HitPositions;
-  ItemHit := ((hiOnItem in HitInfo.HitPositions) and ((toFullRowDrag in FOptions.FMiscOptions) or
-             (toFullRowSelect in FOptions.FSelectionOptions)));
+  ItemHit := ((hiOnItem in HitInfo.HitPositions) and
+             ((toFullRowDrag in FOptions.FMiscOptions) or (toFullRowSelect in FOptions.FSelectionOptions)));
+
   // In report mode only direct hits of the node captions/images in the main column are accepted as hits.
   if (toReportMode in FOptions.FMiscOptions) and not (ItemHit or ((LabelHit or ImageHit) and
     (HitInfo.HitColumn = FHeader.MainColumn))) then
@@ -19770,7 +19771,7 @@ begin
 
   if Assigned(HitInfo.HitNode) then
   begin
-    if ItemHit or LabelHit or ImageHit or not (toShowDropmark in FOptions.FPaintOptions) then
+    if LabelHit or ImageHit or not (toShowDropmark in FOptions.FPaintOptions) then
       Result := dmOnNode
     else
       if ((NodeRect.Top + NodeRect.Bottom) div 2) > P.Y then

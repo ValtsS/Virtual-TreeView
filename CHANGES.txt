@@ -2,6 +2,7 @@ September 10, 2012
  - Fixed issue #66: column auto-resize makes not aware of StaticText
  - Fixed issue #53: Misalignment Images Columns > 0
  - Fixed issue #176: Multiline Aligment Problem
+ - Fixed issue #283: VTV no longer allows to drop above or below when using Full row selection
 
  - Bug fix: Functions GetLastVisible and GetLastVisibleNoInit return correct results even if some anchestor of the last visible node is not effectively visible
  - Improvement: Added functions GetNextSiblingNoInit and GetPreviousSiblingNoInit
