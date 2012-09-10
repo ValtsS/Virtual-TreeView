@@ -3,6 +3,7 @@ September 10, 2012
  - Fixed issue #53: Misalignment Images Columns > 0
  - Fixed issue #176: Multiline Aligment Problem
  - Fixed issue #283: VTV no longer allows to drop above or below when using Full row selection
+ - Fixed issue #173: Two suggestions about class member visibilities
 
  - Bug fix: Functions GetLastVisible and GetLastVisibleNoInit return correct results even if some anchestor of the last visible node is not effectively visible
  - Improvement: Added functions GetNextSiblingNoInit and GetPreviousSiblingNoInit
