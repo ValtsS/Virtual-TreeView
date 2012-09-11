@@ -153,6 +153,9 @@ const
   ChangeTimer = 5;
   StructureChangeTimer = 6;
   SearchTimer = 7;
+  ThemeChangedTimer = 8;
+
+  ThemeChangedTimerDelay = 500;
 
   // Need to use this message to release the edit link interface asynchronously.
   WM_CHANGESTATE = WM_APP + 32;
@@ -17524,6 +17527,7 @@ begin
   StopTimer(HeaderTimer);
   StopTimer(ScrollTimer);
   StopTimer(SearchTimer);
+  StopTimer(ThemeChangedTimer);
   FSearchBuffer := '';
   FLastSearchNode := nil;
 
@@ -18923,7 +18927,10 @@ begin
     DoStateChange([tsUseThemes])
   else
     DoStateChange([], [tsUseThemes]);
-  RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_VALIDATE or RDW_FRAME);
+
+  // Updating the visuals here will not work correctly. Therefore we postpone
+  // the update by using a timer.
+  SetTimer(Handle, ThemeChangedTimer, ThemeChangedTimerDelay, nil);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -18963,6 +18970,11 @@ begin
           StopTimer(SearchTimer);
           FSearchBuffer := '';
           FLastSearchNode := nil;
+        end;
+      ThemeChangedTimer:
+        begin
+          StopTimer(ThemeChangedTimer);
+          RecreateWnd;
         end;
     end;
   end;
