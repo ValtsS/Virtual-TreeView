@@ -2050,6 +2050,7 @@ type
     FLastClickPos: TPoint;                       // Used for retained drag start and wheel mouse scrolling.
     FOperationCount: Cardinal;                   // Counts how many nested long-running operations are in progress.
     FOperationCanceled: Boolean;                 // Used to indicate that a long-running operation should be canceled.
+    FChangingTheme: Boolean;                     // Used to indicate that a theme change is goi ng on
 
     // MSAA support
     FAccessible: IAccessible;                    // The IAccessible interface to the window itself.
@@ -2316,6 +2317,7 @@ type
     procedure SetVisiblePath(Node: PVirtualNode; Value: Boolean);
     procedure StaticBackground(Source: TBitmap; Target: TCanvas; Offset: TPoint; R: TRect);
     procedure StopTimer(ID: Integer);
+    procedure SetWindowTheme(Theme: String);
     procedure TileBackground(Source: TBitmap; Target: TCanvas; Offset: TPoint; R: TRect);
     function ToggleCallback(Step, StepSize: Integer; Data: Pointer): Boolean;
 
@@ -6255,13 +6257,13 @@ begin
            (toUseExplorerTheme in (ToBeSet + ToBeCleared)) then
           if toUseExplorerTheme in ToBeSet then
           begin
-            SetWindowTheme(Handle, 'explorer', nil);
+            SetWindowTheme('explorer');
             DoStateChange([tsUseExplorerTheme]);
           end
           else
             if toUseExplorerTheme in ToBeCleared then
             begin
-              SetWindowTheme(Handle, '', nil);
+              SetWindowTheme('');
               DoStateChange([], [tsUseExplorerTheme]);
             end;
 
@@ -16661,6 +16663,15 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+procedure TBaseVirtualTree.SetWindowTheme(Theme: String);
+
+begin
+  FChangingTheme := True;
+  UxTheme.SetWindowTheme(Handle, PWideChar(Theme), nil);
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 procedure TBaseVirtualTree.TileBackground(Source: TBitmap; Target: TCanvas; Offset: TPoint; R: TRect);
 
 // Draws the given source graphic so that it tiles into the given rectangle which is relative to the target bitmap.
@@ -16671,7 +16682,6 @@ var
   SourceX,
   SourceY,
   TargetX,
-
   DeltaY: Integer;
 
 begin
@@ -18936,7 +18946,9 @@ begin
 
   // Updating the visuals here will not work correctly. Therefore we postpone
   // the update by using a timer.
-  SetTimer(Handle, ThemeChangedTimer, ThemeChangedTimerDelay, nil);
+  if not FChangingTheme then
+    SetTimer(Handle, ThemeChangedTimer, ThemeChangedTimerDelay, nil);
+  FChangingTheme := False;
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -19708,7 +19720,7 @@ begin
     if (toUseExplorerTheme in FOptions.FPaintOptions) and IsWinVistaOrAbove then
     begin
       DoStateChange([tsUseExplorerTheme]);
-      SetWindowTheme(Handle, 'explorer', nil);
+      SetWindowTheme('explorer');
     end
     else
       DoStateChange([], [tsUseExplorerTheme]);
