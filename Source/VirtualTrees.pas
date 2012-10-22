@@ -10790,8 +10790,10 @@ var
 
     with TargetCanvas do
       begin
-      if hpeBackground in RequestedElements then
-        FHeader.Treeview.DoAdvancedHeaderDraw(PaintInfo, [hpeBackground])
+      if hpeBackground in RequestedElements then begin
+        PaintInfo.PaintRectangle := BackgroundRect;
+        FHeader.Treeview.DoAdvancedHeaderDraw(PaintInfo, [hpeBackground]);
+      end  
       else
       begin
         if tsUseThemes in FHeader.Treeview.FStates then
