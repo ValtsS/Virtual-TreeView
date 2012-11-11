@@ -1,4 +1,6 @@
-October 19, 2012
+ - Removed file VTConfig.inc. The former $ifdef ReverseFullExpandHotKey is now a flag in the 
+   TVTMiscOption enumeration. The $ifdef TntSupport can be defined at the beginning of the unit VirtualTrees.
+
 - Improved creation of IDragSourceHelper and added support for IDragSourceHelper2
 - Fixed problem with drawing selection rectangle after canceled rename
 

@@ -52,10 +52,11 @@ unit VirtualTrees;
 
 interface
 
-{$booleval off} // Use fastest possible boolean evaluation.
+{$booleval off} // Use fastest possible boolean evaluation
 
+{$define TntSupport} // Added by Igor Afanasyev to support unicode-aware inplace editors. This implementation uses
 {$I Compilers.inc}
-{$I VTConfig.inc}
+                      // Troy Wolbrink's TNT controls, meanwhile available as TMS Unicode components
 
 // For some things to work we need code, which is classified as being unsafe for .NET.
 {$ifdef COMPILER_7_UP}
@@ -537,7 +538,8 @@ type
     toNodeHeightResize,         // Allows changing a node's height via mouse.
     toNodeHeightDblClickResize, // Allows to reset a node's height to FDefaultNodeHeight via a double click.
     toEditOnClick,              // Editing mode can be entered with a single click
-    toEditOnDblClick            // Editing mode can be entered with a double click
+    toEditOnDblClick,           // Editing mode can be entered with a double click
+    toReverseFullExpandHotKey   // Used to define Ctrl+'+' instead of Ctrl+Shift+'+' for full expand (and similar for collapsing)
   );
   TVTMiscOptions = set of TVTMiscOption;
 
@@ -18275,7 +18277,7 @@ begin
             if not (tsIncrementalSearching in FStates) then
             begin
               if ssCtrl in Shift then
-                if {$ifdef ReverseFullExpandHotKey} not {$endif ReverseFullExpandHotKey} (ssShift in Shift) then
+                if not (toReverseFullExpandHotKey in TreeOptions.MiscOptions) and (ssShift in Shift) then
                   FullExpand
                 else
                   FHeader.AutoFitColumns
@@ -18289,7 +18291,7 @@ begin
             if not (tsIncrementalSearching in FStates) then
             begin
               if ssCtrl in Shift then
-                if {$ifdef ReverseFullExpandHotKey} not {$endif ReverseFullExpandHotKey} (ssShift in Shift) then
+                if not (toReverseFullExpandHotKey in TreeOptions.MiscOptions) and (ssShift in Shift) then
                   FullCollapse
                 else
                   FHeader.RestoreColumns
