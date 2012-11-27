@@ -1,3 +1,6 @@
+ - Added fix for ugly drawn disabled images (thx to S. Glienke). See also: 
+   http://stackoverflow.com/questions/6003018/make-disabled-menu-and-toolbar-images-look-better
+   http://qc.embarcadero.com/wc/qcmain.aspx?d=86879
  - Removed file VTConfig.inc. The former $ifdef ReverseFullExpandHotKey is now a flag in the 
    TVTMiscOption enumeration. The $ifdef TntSupport can be defined at the beginning of the unit VirtualTrees.
 
