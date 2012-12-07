@@ -7330,6 +7330,7 @@ begin
           end;
           SetBkMode(Handle, Windows.TRANSPARENT);
           R.Top := Y;
+          R.Left := R.Left + 3; // Make the text more centered
           if Assigned(Node) and (LineBreakStyle = hlbForceMultiLine) then
             DrawFormat := DrawFormat or DT_WORDBREAK;
           if IsWinNT then
