@@ -1,3 +1,4 @@
+ - Fixed issue #306: Drag image was broken except for CF_HDROP
  - Fixed issue #305: Broken hint drawing with classic windows theme and toUseExplorerTheme
  - Fixed issue #298: Bad canvas parameters in OnBeforeCellPaint method
  - Added fix for ugly drawn disabled images (thx to S. Glienke). See also: 
