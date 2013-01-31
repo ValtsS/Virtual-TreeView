@@ -10503,6 +10503,19 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+function TVirtualTreeColumns.GetFirstColumn: TColumnIndex;
+
+// Returns the first column in display order.
+
+begin
+  if Count = 0 then
+    Result := InvalidColumn
+  else
+    Result := FPositionIndex[0];
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 function TVirtualTreeColumns.GetNextColumn(Column: TColumnIndex): TColumnIndex;
 
 // Returns the next column in display order. Column is the index of an item in the collection (a column).
@@ -10521,19 +10534,6 @@ begin
     else
       Result := InvalidColumn;
   end;
-end;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-function TVirtualTreeColumns.GetFirstColumn: TColumnIndex;
-
-// Returns the first column in display order.
-
-begin
-  if Count = 0 then
-    Result := InvalidColumn
-  else
-    Result := FPositionIndex[0];
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
