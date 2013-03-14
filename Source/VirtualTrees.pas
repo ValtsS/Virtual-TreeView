@@ -29332,7 +29332,8 @@ function TBaseVirtualTree.GetNodeData(Node: PVirtualNode): Pointer;
 
 begin
   Assert(FNodeDataSize > 0, 'NodeDataSize not initialized.');
-
+  if ([vsInitialized, vsInitialUserData] * Node.States = []) then
+    InitNode(Node);
   if (FNodeDataSize <= 0) or (Node = nil) or (Node = FRoot) then
     Result := nil
   else
