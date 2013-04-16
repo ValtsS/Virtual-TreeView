@@ -3316,6 +3316,7 @@ type
     property DragWidth;
     property DrawSelectionMode;
     property EditDelay;
+    property EmptyListMessage;
     property Enabled;
     property Font;
     property Header;
