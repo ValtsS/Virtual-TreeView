@@ -1,3 +1,5 @@
+- Fixed #316: These fixes are to make the treeview behave more like the windows explorer regarding
+  selecting and dragging. Thanks to Stefan Glienke.
  - Added function TVirtualTreeColumns.GetFirstColumn that returns the first column in display order.
  - Fixed issue #322: CaptionAlignment is not being restored by Header.LoadFromStream().
  - TBaseVirtualTree.GetNodeData() now calls InitNode() if the node had not beend initialized.
