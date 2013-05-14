@@ -272,7 +272,7 @@ type
     vsHasChildren,       // Indicates the presence of child nodes without actually setting them.
     vsVisible,           // Indicate whether the node is visible or not (independant of the expand states of its parents).
     vsSelected,          // Set if the node is in the current selection.
-    vsInitialUserData,   // Set if (via AddChild or InsertNode) initial user data has been set which requires OnFreeNode.
+    vsOnFreeNodeCallRequired,   // Set if user data has been set which requires OnFreeNode.
     vsAllChildrenHidden, // Set if vsHasChildren is set and no child node has the vsVisible flag set.
     vsClearing,          // A node's children are being deleted. Don't register structure change event.
     vsMultiline,         // Node text is wrapped at the cell boundaries instead of being shorted.
@@ -3490,6 +3490,7 @@ type
 {$ifdef COMPILER_6_UP}
     {$if CompilerVersion>=21}
     property OnCanResize;
+    property Touch;
     {$ifend}
 {$endif COMPILER_6_UP}
   end;
@@ -21123,7 +21124,7 @@ begin
     FDropTargetNode := nil;
   if Node = FLastStructureChangeNode then
     FLastStructureChangeNode := nil;
-  if Assigned(FOnFreeNode) and ([vsInitialized, vsInitialUserData] * Node.States <> []) then
+  if Assigned(FOnFreeNode) and ([vsInitialized, vsOnFreeNodeCallRequired] * Node.States <> []) then
     FOnFreeNode(Self, Node);
   FreeMem(Node);
 end;
@@ -26403,7 +26404,7 @@ begin
       Body.ChildCount := ChildCount;
       Body.NodeHeight := NodeHeight;
       // Some states are only temporary so take them out as they make no sense at the new location.
-      Body.States := States - [vsChecking, vsCutOrCopy, vsDeleting, vsInitialUserData, vsHeightMeasured];
+      Body.States := States - [vsChecking, vsCutOrCopy, vsDeleting, vsOnFreeNodeCallRequired, vsHeightMeasured];
       Body.Align := Align;
       Body.CheckState := CheckState;
       Body.CheckType := CheckType;
@@ -26546,7 +26547,7 @@ begin
       begin
         NodeData := Pointer(PByte(@Result.Data) + FTotalInternalDataSize);
         NodeData^ := UserData;
-        Include(Result.States, vsInitialUserData);
+        Include(Result.States, vsOnFreeNodeCallRequired);
       end
       else
         ShowError(SCannotSetUserData, hcTFCannotSetUserData);
@@ -29341,9 +29342,8 @@ begin
   if (FNodeDataSize <= 0) or (Node = nil) or (Node = FRoot) then
     Result := nil
   else begin
-    if ([vsInitialized, vsInitialUserData] * Node.States = []) then
-      InitNode(Node);
     Result := PByte(@Node.Data) + FTotalInternalDataSize;
+    Include(Node.States, vsOnFreeNodeCallRequired); // We now need to call OnFreeNode, see bug #323
   end;
 end;
 
@@ -30197,7 +30197,7 @@ begin
       begin
         NodeData := Pointer(PByte(@Result.Data) + FTotalInternalDataSize);
         NodeData^ := UserData;
-        Include(Result.States, vsInitialUserData);
+        Include(Result.States, vsOnFreeNodeCallRequired);
       end
       else
         ShowError(SCannotSetUserData, hcTFCannotSetUserData);
