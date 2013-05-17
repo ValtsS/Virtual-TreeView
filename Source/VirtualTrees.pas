@@ -23622,7 +23622,7 @@ begin
 
     // Query the application to learn if dragging may start now (if set to dmManual).
     if Assigned(HitInfo.HitNode) and not AutoDrag and (DragMode = dmManual) then
-      AutoDrag := DoBeforeDrag(HitInfo.HitNode, Column) and (FullRowDrag or IsLabelHit);
+      AutoDrag := DoBeforeDrag(HitInfo.HitNode, Column) and (IsAnyHit or FullRowDrag);
 
     // handle node height tracking
     if IsHeightTracking then
