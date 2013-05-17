@@ -9865,7 +9865,7 @@ var
 
 begin
   Result := InvalidColumn;
-  if Relative and (P.X > Header.Columns.GetVisibleFixedWidth) then
+  if Relative and (P.X >= Header.Columns.GetVisibleFixedWidth) then
     ColumnLeft := -FHeader.Treeview.FEffectiveOffsetX
   else
     ColumnLeft := 0;
@@ -28271,7 +28271,7 @@ begin
   // Convert position into absolute coordinate if necessary.
   if Relative then
   begin
-    if X > Header.Columns.GetVisibleFixedWidth then
+    if X >= Header.Columns.GetVisibleFixedWidth then
       Inc(X, FEffectiveOffsetX);
     Inc(Y, -FOffsetY);
   end;
