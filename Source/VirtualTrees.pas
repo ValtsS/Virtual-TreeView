@@ -90,6 +90,9 @@ uses
   {$ifdef TntSupport}
     , TntStdCtrls       // Unicode aware inplace editor.
   {$endif TntSupport}
+  {$ifndef COMPILER_6_UP}
+   , Emu_D5
+  {$endif}
   ;
 
 const
@@ -2223,6 +2226,7 @@ type
     FOnStartOperation: TVTOperationEvent;        // Called when an operation starts
     FOnEndOperation: TVTOperationEvent;          // Called when an operation ends
 
+    procedure CMParentDoubleBufferedChange(var Message: TMessage); message CM_PARENTDOUBLEBUFFEREDCHANGED;
     procedure AdjustCoordinatesByIndent(var PaintInfo: TVTPaintInfo; Indent: Integer);
     procedure AdjustTotalCount(Node: PVirtualNode; Value: Integer; relative: Boolean = False);
     procedure AdjustTotalHeight(Node: PVirtualNode; Value: Integer; relative: Boolean = False);
@@ -3796,7 +3800,7 @@ uses
 {$ifdef COMPILER_6_UP}
   StrUtils,
 {$else}
-  StrUtils_D5, Emu_D5, TNTSystem,
+  StrUtils_D5, TNTSystem,
 {$endif COMPILER_6_UP}
   VTAccessibilityFactory;  // accessibility helper class
 
@@ -16020,6 +16024,8 @@ begin
   // empty by intention, we do our own buffering
 end;
 
+//----------------------------------------------------------------------------------------------------------------------
+
 function TBaseVirtualTree.GetDoubleBuffered: Boolean;
 begin
   Result := True; // we do our own buffering
@@ -16945,6 +16951,12 @@ begin
   FHeader.Invalidate(nil);
 end;
 
+
+procedure TBaseVirtualTree.CMParentDoubleBufferedChange(var Message: TMessage);
+begin
+  // empty by intention, we do our own buffering
+end;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 procedure TBaseVirtualTree.CMDenySubclassing(var Message: TMessage);
@@ -17466,7 +17478,6 @@ begin
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
-
 procedure TBaseVirtualTree.CMSysColorChange(var Message: TMessage);
 
 begin

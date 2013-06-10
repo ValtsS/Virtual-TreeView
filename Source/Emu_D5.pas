@@ -2,7 +2,11 @@ unit Emu_D5;
 
 interface
 
-uses Windows, ActiveX, SysUtils;
+uses Windows, ActiveX, SysUtils, Messages;
+
+const
+ CM_BASE = $B000;
+ CM_PARENTDOUBLEBUFFEREDCHANGED = CM_BASE + $80;
 
 function SHDoDragDrop(hwnd:HWND; pdata:IDataObject; pdsrc:IDropSource; dwEffect:DWord; pdwEffect:PDWORD):HRESULT;StdCall;
 
