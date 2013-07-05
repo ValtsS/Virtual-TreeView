@@ -23749,7 +23749,7 @@ begin
          (toEditOnClick in FOptions.FMiscOptions) and CanEdit(FFocusedNode, HitInfo.HitColumn) then
       begin
         FEditColumn := FFocusedColumn;
-        SetTimer(Handle, EditTimer, FEditDelay, nil);
+        DoEdit;
       end
       else
         DoStateChange([], [tsEditPending]);
