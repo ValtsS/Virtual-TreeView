@@ -1035,6 +1035,8 @@ type
     procedure ReadText(Reader: TReader);
     procedure WriteHint(Writer: TWriter);
     procedure WriteText(Writer: TWriter);
+    property HasImage: Boolean read fHasImage;
+    property ImageRect: TRect read fImageRect;
   public
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
@@ -1139,8 +1141,11 @@ type
 
     property HeaderBitmap: TBitmap read FHeaderBitmap;
     property PositionToIndex: TIndexArray read FPositionToIndex;
+    property HoverIndex: TColumnIndex read FHoverIndex;
+    property DownIndex: TColumnIndex read FDownIndex;
+    property CheckBoxHit: Boolean read FCheckBoxHit;
   public
-    constructor Create(AOwner: TVTHeader);
+    constructor Create(AOwner: TVTHeader); virtual;
     destructor Destroy; override;
 
     function Add: TVirtualTreeColumn; virtual;
