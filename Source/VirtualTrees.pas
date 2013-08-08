@@ -2233,6 +2233,8 @@ type
     FOnGetHintSize: TVTGetHintSizeEvent;
     fOnGetHintKind: TVTHintKindEvent;
     FOnIncrementalSearch: TVTIncrementalSearchEvent; // triggered on every key press (not key down)
+    FOnMouseEnter: TNotifyEvent;
+    FOnMouseLeave: TNotifyEvent;
 
     // operations
     FOnStartOperation: TVTOperationEvent;        // Called when an operation starts
@@ -2362,6 +2364,7 @@ type
     procedure CMFontChanged(var Message: TMessage); message CM_FONTCHANGED;
     procedure CMHintShow(var Message: TCMHintShow); message CM_HINTSHOW;
     procedure CMHintShowPause(var Message: TCMHintShowPause); message CM_HINTSHOWPAUSE;
+    procedure CMMouseEnter(var Message: TMessage); message CM_MOUSEENTER;
     procedure CMMouseLeave(var Message: TMessage); message CM_MOUSELEAVE;
     procedure CMMouseWheel(var Message: TCMMouseWheel); message CM_MOUSEWHEEL;
     procedure CMSysColorChange(var Message: TMessage); message CM_SYSCOLORCHANGE;
@@ -2528,6 +2531,8 @@ type
     function DoKeyAction(var CharCode: Word; var Shift: TShiftState): Boolean; virtual;
     procedure DoLoadUserData(Node: PVirtualNode; Stream: TStream); virtual;
     procedure DoMeasureItem(TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: Integer); virtual;
+    procedure DoMouseEnter(); virtual;
+    procedure DoMouseLeave(); virtual;
     procedure DoNodeCopied(Node: PVirtualNode); virtual;
     function DoNodeCopying(Node, NewParent: PVirtualNode): Boolean; virtual;
     function DoNodeHeightDblClickResize(Node: PVirtualNode; Column: TColumnIndex; Shift: TShiftState;
@@ -2824,6 +2829,8 @@ type
     property OnLoadNode: TVTSaveNodeEvent read FOnLoadNode write FOnLoadNode;
     property OnLoadTree: TVTSaveTreeEvent read FOnLoadTree write FOnLoadTree;
     property OnMeasureItem: TVTMeasureItemEvent read FOnMeasureItem write FOnMeasureItem;
+    property OnMouseEnter: TNotifyEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseLeave: TNotifyEvent read FOnMouseLeave write FOnMouseLeave;
     property OnNodeCopied: TVTNodeCopiedEvent read FOnNodeCopied write FOnNodeCopied;
     property OnNodeCopying: TVTNodeCopyingEvent read FOnNodeCopying write FOnNodeCopying;
     property OnNodeExport: TVTNodeExportEvent read FOnNodeExport write FOnNodeExport;
@@ -3503,6 +3510,8 @@ type
     property OnMouseMove;
     property OnMouseUp;
     property OnMouseWheel;
+    property OnMouseEnter;
+    property OnMouseLeave;
     property OnNewText;
     property OnNodeCopied;
     property OnNodeCopying;
@@ -17432,6 +17441,13 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+procedure TBaseVirtualTree.CMMouseEnter(var Message: TMessage);
+begin
+  DoMouseEnter();
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 procedure TBaseVirtualTree.CMMouseLeave(var Message: TMessage);
 
 var
@@ -17463,7 +17479,7 @@ begin
     Header.FColumns.FHoverIndex := NoColumn;
     Header.FColumns.FCheckBoxHit := False;
   end;
-
+  DoMouseLeave();
   inherited;
 end;
 
@@ -19640,9 +19656,6 @@ end;
 
 procedure TBaseVirtualTree.ChangeScale(M, D: Integer);
 
-var
-  DoScale: Boolean;
-
 begin
   inherited;
 
@@ -21585,6 +21598,19 @@ begin
     FOnMeasureItem(Self, TargetCanvas, Node, NodeHeight);
 end;
 
+//----------------------------------------------------------------------------------------------------------------------
+
+procedure TBaseVirtualTree.DoMouseEnter();
+begin
+  if Assigned(FOnMouseEnter) then
+    FOnMouseEnter(Self);
+end;
+
+procedure TBaseVirtualTree.DoMouseLeave;
+begin
+  if Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self);
+end;
 //----------------------------------------------------------------------------------------------------------------------
 
 procedure TBaseVirtualTree.DoNodeCopied(Node: PVirtualNode);
