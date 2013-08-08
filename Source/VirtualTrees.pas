@@ -96,7 +96,7 @@ uses
   ;
 
 const
-  VTVersion = '5.1.4';
+  VTVersion = '5.2.0';
 
 {$ifndef COMPILER_12_UP}
 type
