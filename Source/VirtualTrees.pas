@@ -32996,7 +32996,7 @@ begin
           if Node.ChildCount > 0 then
           begin
             UpdateRanges;
-
+            UpdateScrollbars(True);
             if [tsPainting, tsExpanding] * FStates = [] then
             begin
               if (vsExpanded in Node.States) and ((toAutoScrollOnExpand in FOptions.FAutoOptions) or
@@ -33039,7 +33039,7 @@ begin
               end;
             end;
 
-            UpdateScrollbars(True);
+            //UpdateScrollbars(True); Moved up
 
             // Check for automatically scrolled tree.
             if NeedFullInvalidate then
