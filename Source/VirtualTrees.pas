@@ -2572,6 +2572,7 @@ type
     procedure DrawDottedHLine(const PaintInfo: TVTPaintInfo; Left, Right, Top: Integer); virtual;
     procedure DrawDottedVLine(const PaintInfo: TVTPaintInfo; Top, Bottom, Left: Integer); virtual;
     procedure EndOperation(OperationKind: TVTOperationKind);
+    procedure EnsureNodeFocused();
     function FindNodeInSelection(P: PVirtualNode; var Index: Integer; LowBound, HighBound: Integer): Boolean; virtual;
     procedure FinishChunkHeader(Stream: TStream; StartPos, EndPos: Integer); virtual;
     procedure FontChanged(AFont: TObject); virtual;
@@ -18557,6 +18558,8 @@ begin
         InvalidateNode(FCheckNode);
         FCheckNode := nil;
       end;
+     VK_TAB:
+       EnsureNodeFocused();
   end;
 end;
 
@@ -21098,10 +21101,6 @@ end;
 procedure TBaseVirtualTree.DoEnter();
 begin
   inherited;
-  // Always select a node if the control gets the focus, #237
-  if FocusedNode = nil then begin
-    FocusedNode := Self.GetFirstVisible();
-  end;
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -22671,6 +22670,15 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+procedure TBaseVirtualTree.EnsureNodeFocused();
+begin
+  // Always select a node if the control gets the focus, #237
+  if FocusedNode = nil then
+    FocusedNode := Self.GetFirstVisible();
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 function TBaseVirtualTree.FindNodeInSelection(P: PVirtualNode; var Index: Integer; LowBound,
   HighBound: Integer): Boolean;
 
@@ -23837,6 +23845,7 @@ begin
         DoStateChange([], [tsEditPending]);
     end;
   end;
+  EnsureNodeFocused()
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -33050,6 +33059,9 @@ begin
           end
           else
             InvalidateNode(Node);
+            // Always select a node if the control gets the focus, #237
+            if FocusedNode = nil then
+              FocusedNode := Node;
         end
         else
           UpdateRanges;
