@@ -18559,7 +18559,7 @@ begin
         FCheckNode := nil;
       end;
      VK_TAB:
-       EnsureNodeFocused();
+       EnsureNodeFocused(); // Always select a node if the control gets the focus via TAB key, #237
   end;
 end;
 
@@ -22672,7 +22672,6 @@ end;
 
 procedure TBaseVirtualTree.EnsureNodeFocused();
 begin
-  // Always select a node if the control gets the focus, #237
   if FocusedNode = nil then
     FocusedNode := Self.GetFirstVisible();
 end;
@@ -23845,7 +23844,6 @@ begin
         DoStateChange([], [tsEditPending]);
     end;
   end;
-  EnsureNodeFocused()
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -33059,9 +33057,6 @@ begin
           end
           else
             InvalidateNode(Node);
-            // Always select a node if the control gets the focus, #237
-            if FocusedNode = nil then
-              FocusedNode := Node;
         end
         else
           UpdateRanges;
