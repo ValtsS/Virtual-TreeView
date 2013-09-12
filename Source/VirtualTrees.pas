@@ -5969,7 +5969,7 @@ begin
       end;
 
       // Something to do?
-      if Assigned(FCurrentTree) then
+      if Assigned(FCurrentTree) and not Terminated then
       begin
         lValidationSuccessful := False;
         try
@@ -13726,6 +13726,7 @@ end;
 destructor TBaseVirtualTree.Destroy;
 
 begin
+  InterruptValidation();
   Exclude(FOptions.FMiscOptions, toReadOnly);
   ReleaseThreadReference(Self);
   StopWheelPanning;
@@ -26403,7 +26404,7 @@ begin
   InterruptValidation;
 
   FStartIndex := 0;
-  if tsValidationNeeded in FStates then
+  if (tsValidationNeeded in FStates) and not (csDestroying in ComponentState) then
   begin
     // Tell the thread this tree needs actually something to do.
     WorkerThread.AddTree(Self);
