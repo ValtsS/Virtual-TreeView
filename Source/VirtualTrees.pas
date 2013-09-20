@@ -15501,6 +15501,7 @@ begin
       // box is always of odd size
       FillBitmap(FMinusBM);
       FillBitmap(FHotMinusBM);
+      if (Theme = 0) then
       if not (tsUseExplorerTheme in FStates) then
       begin
         if FButtonStyle = bsTriangle then
@@ -15537,6 +15538,7 @@ begin
     begin
       FillBitmap(FPlusBM);
       FillBitmap(FHotPlusBM);
+      if (Theme = 0) then
       if not (tsUseExplorerTheme in FStates) then
       begin
         if FButtonStyle = bsTriangle then
@@ -15573,7 +15575,7 @@ begin
     end;
 
     // Overwrite glyph images if theme is active.
-    if tsUseThemes in FStates then
+    if (tsUseThemes in FStates) and (Theme <> 0)then
     begin
       R := Rect(0, 0, Size.cx, Size.cy);
       DrawThemeBackground(Theme, FPlusBM.Canvas.Handle, TVP_GLYPH, GLPS_CLOSED, R, nil);
