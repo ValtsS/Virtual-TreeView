@@ -3856,7 +3856,6 @@ resourcestring
 const
   ClipboardStates = [tsCopyPending, tsCutPending];
   DefaultScrollUpdateFlags = [suoRepaintHeader, suoRepaintScrollbars, suoScrollClientArea, suoUpdateNCArea];
-  MinimumTimerInterval = 1; // minimum resolution for timeGetTime
   TreeNodeSize = (SizeOf(TVirtualNode) + 3) and not 3; // used for node allocation and access to internal data
 
   // Lookup to quickly convert a specific check state into its pressed counterpart and vice versa.
@@ -5766,9 +5765,6 @@ begin
   CreateSystemImageSet(SystemCheckImages, Flags, False);
   CreateSystemImageSet(SystemFlatCheckImages, Flags, True);
 
-  // Specify an useful timer resolution for timeGetTime.
-  timeBeginPeriod(MinimumTimerInterval);
-
   // Delphi (at least version 6 and lower) does not provide a standard split cursor.
   // Hence we have to load our own.
   Screen.Cursors[crHeaderSplit] := LoadCursor(HInstance, 'VT_HEADERSPLIT');
@@ -5797,8 +5793,6 @@ var
   HintWasEnabled: Boolean;
 
 begin
-  timeEndPeriod(MinimumTimerInterval);
-
   LightCheckImages.Free;
   LightCheckImages := nil;
   DarkCheckImages.Free;
