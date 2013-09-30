@@ -14164,9 +14164,6 @@ begin
         Inc(TextLeft, GetNodeImageSize(run).cx + 2);
       if WithStateImages and HasImage(Run, ikState, MainColumn) then
         Inc(TextLeft, StateImageOffset);
-      // Ensure the node's height is determined.
-      MeasureItemHeight(Canvas, Run);
-
       NextTop := CurrentTop + Integer(NodeHeight[Run]);
 
       // Simple selection allows to draw the selection rectangle anywhere. No intersection with node captions is
@@ -14343,9 +14340,6 @@ begin
         Dec(TextRight, GetNodeImageSize(run).cx + 2);
       if WithStateImages and HasImage(Run, ikState, MainColumn) then
         Dec(TextRight, StateImageOffset);
-      // Ensure the node's height is determined.
-      MeasureItemHeight(Canvas, Run);
-
       NextTop := CurrentTop + Integer(NodeHeight[Run]);
 
       // Simple selection allows to draw the selection rectangle anywhere. No intersection with node captions is
@@ -30728,10 +30722,12 @@ begin
   if not (vsHeightMeasured in Node.States) then
   begin
     Include(Node.States, vsHeightMeasured);
-    NewNodeHeight := Node.NodeHeight;
-    DoMeasureItem(Canvas, Node, NewNodeHeight);
-    if NewNodeHeight <> Node.NodeHeight then
-      SetNodeHeight(Node, NewNodeHeight);
+    if (toVariableNodeHeight in FOptions.FMiscOptions) then begin
+      NewNodeHeight := Node.NodeHeight;
+      DoMeasureItem(Canvas, Node, NewNodeHeight);
+      if NewNodeHeight <> Node.NodeHeight then
+        SetNodeHeight(Node, NewNodeHeight);
+    end;
   end;
 end;
 
