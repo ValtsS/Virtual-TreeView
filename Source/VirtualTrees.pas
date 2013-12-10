@@ -5944,6 +5944,7 @@ begin
       TranslateMessage(Msg);
       DispatchMessage(Msg);
     end;
+    CheckSynchronize();// If this call makes problems consider doing it only when needed by counting Synchronize() calls in a threadsafe counter
   end;
 end;
 
@@ -9569,7 +9570,7 @@ var
   AutoIndex,
   Index,
   RestWidth: Integer;
-
+  WasUpdating: Boolean;
 begin
   if Count > 0 then
   begin
@@ -9602,7 +9603,15 @@ begin
         begin
           FWidth := NewValue;
           UpdatePositions;
-          FHeader.Treeview.DoColumnResize(AutoIndex);
+          WasUpdating := csUpdating in FHeader.Treeview.ComponentState;
+          if not WasUpdating then
+            FHeader.Treeview.Updating();// Fixes #398
+          try
+            FHeader.Treeview.DoColumnResize(AutoIndex);
+          finally
+            if not WasUpdating then
+              FHeader.Treeview.Updated();
+          end;
         end;
       end;
     end;
