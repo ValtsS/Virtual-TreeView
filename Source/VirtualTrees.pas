@@ -23723,7 +23723,9 @@ begin
     if Focused and
       ((hiOnItemLabel in HitInfo.HitPositions) or ((toGridExtensions in FOptions.FMiscOptions) and
       (hiOnItem in HitInfo.HitPositions))) and NodeSelected and not NewColumn and ShiftEmpty then
+    begin
       DoStateChange([tsEditPending]);
+    end;
 
     if not (toDisableDrawSelection in FOptions.FSelectionOptions) and not (IsLabelHit or FullRowDrag) and MultiSelect then
     begin
@@ -23853,7 +23855,7 @@ begin
          (toEditOnClick in FOptions.FMiscOptions) and CanEdit(FFocusedNode, HitInfo.HitColumn) then
       begin
         FEditColumn := FFocusedColumn;
-        DoEdit;
+        SetTimer(Handle, EditTimer, FEditDelay, nil);
       end
       else
         DoStateChange([], [tsEditPending]);
