@@ -25279,9 +25279,20 @@ var
     // into the InnerRect, otherwise into the RowRect
     if not (toFullRowSelect in FOptions.FSelectionOptions) or (toGridExtensions in FOptions.FMiscOptions) then
       DrawThemeBackground(Theme, PaintInfo.Canvas.Handle, TVP_TREEITEM, State, InnerRect, nil)
-      DrawThemeBackground(Theme, PaintInfo.Canvas.Handle, TVP_TREEITEM, State, RowRect, nil)
     else
       DrawThemeBackground(Theme, PaintInfo.Canvas.Handle, TVP_TREEITEM, State, InnerRect, nil);
+  end;
+
+ procedure DrawThemedFocusRect(State: Integer);
+  var
+    Theme: HTHEME;
+  begin
+    Theme := OpenThemeData(Handle, 'Explorer::ItemsView');
+    if not (toFullRowSelect in FOptions.FSelectionOptions) or (toGridExtensions in FOptions.FMiscOptions) then
+      DrawThemeBackground(Theme, PaintInfo.Canvas.Handle, LVP_LISTDETAIL, State, InnerRect, nil)
+    else
+      DrawThemeBackground(Theme, PaintInfo.Canvas.Handle, LVP_LISTDETAIL, State, RowRect, nil);
+    CloseThemeData(Theme);
   end;
 
   //--------------- end local functions ---------------------------------------
