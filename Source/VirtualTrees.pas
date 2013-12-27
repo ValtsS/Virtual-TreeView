@@ -33562,7 +33562,7 @@ begin
     if IsWinNT then
       AutoAdjustSize
     else
-      PostMessage(Handle, CM_AUTOADJUST, 0, 0);
+      inherited;
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
