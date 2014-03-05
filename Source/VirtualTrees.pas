@@ -25394,7 +25394,7 @@ begin
     Theme := OpenThemeData(Handle, 'Explorer::TreeView');
     RowRect := Rect(0, PaintInfo.CellRect.Top, FRangeX, PaintInfo.CellRect.Bottom);
     if (Header.Columns.Count = 0) and (toFullRowSelect in TreeOptions.SelectionOptions) then
-      RowRect.Right := ClientWidth;
+      RowRect.Right := Max(ClientWidth, RowRect.Right);
     if toShowVertGridLines in FOptions.PaintOptions then
       Dec(RowRect.Right);
   end;
