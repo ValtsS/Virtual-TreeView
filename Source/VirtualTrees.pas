@@ -2984,6 +2984,7 @@ type
     procedure InvertSelection(VisibleOnly: Boolean);
     function IsEditing: Boolean;
     function IsMouseSelecting: Boolean;
+    function IsEmpty: Boolean;
     function IterateSubtree(Node: PVirtualNode; Callback: TVTGetNodeProc; Data: Pointer; Filter: TVirtualNodeStates = [];
       DoInit: Boolean = False; ChildNodesOnly: Boolean = False): PVirtualNode;
     procedure LoadFromFile(const FileName: TFileName); virtual;
@@ -22784,7 +22785,12 @@ var
 begin
   with PaintInfo, Canvas do
   begin
-    Brush.Color := Color;
+
+      if Focused or (toPopupMode in FOptions.FPaintOptions) then
+        Brush.Color := FColors.FocusedSelectionColor
+      else
+        Brush.Color := FColors.UnfocusedSelectionColor;
+
     R := Rect(Left, Min(Top, Bottom), Left + 1, Max(Top, Bottom) + 1);
     Windows.FillRect(Handle, R, FDottedBrush);
   end;
@@ -23084,6 +23090,13 @@ begin
     else
       ImageInfo[InfoIndex].Images := DefaultImages;
   end;
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+function TBaseVirtualTree.IsEmpty: Boolean;
+begin
+  Result := (Self.ChildCount[nil] = 0);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -31173,6 +31186,7 @@ var
   SavedTargetDC: Integer;
   PaintWidth: Integer;
   CurrentNodeHeight: Integer;
+  lUseSelectedBkColor: Boolean; // determines if the dotted grid lines need to be painted in selection color of background color
 
 begin
   if not (tsPainting in FStates) then
@@ -31486,9 +31500,11 @@ begin
                               if (BidiMode = bdLeftToRight) or not ColumnIsEmpty(Node, Column) then
                               begin
                                 Canvas.Font.Color := FColors.GridLineColor;
+                                lUseSelectedBkColor := (poDrawSelection in PaintOptions) and (toFullRowSelect in FOptions.FSelectionOptions) and
+                                                      (vsSelected in Node.States) and not (toUseBlendedSelection in FOptions.PaintOptions) and not
+                                                      (tsUseExplorerTheme in FStates);
                                 DrawDottedVLine(PaintInfo, CellRect.Top, CellRect.Bottom, CellRect.Right - 1);
-                              end;
-                              Dec(CellRect.Right);
+                              end;                              Dec(CellRect.Right);
                               Dec(ContentRect.Right);
                             end;
                           end;
@@ -35723,11 +35739,10 @@ var
   lSelectedNode: PVirtualNode;
   lSelectedNodeCaption: Unicodestring;
 begin
-  if (toRestoreSelection in TreeOptions.SelectionOptions) and Assigned(Self.OnGetText) and not (csDestroying in ComponentState) then begin
+  if (toRestoreSelection in TreeOptions.SelectionOptions) and Assigned(Self.OnGetText) and not (csDestroying in ComponentState) and not IsEmpty then begin
     if not Assigned(fPreviouslySelected) then begin
       fPreviouslySelected := TStringList.Create();
       fPreviouslySelected.Duplicates := dupIgnore;
-      fPreviouslySelected.CaseSensitive := False;
     end
     else
       fPreviouslySelected.Clear();
