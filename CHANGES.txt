@@ -1,3 +1,4 @@
+  * If toAutoChangeScale is set in AutoOptions, the columns widths are now adjusted too.
 V5.2: (09 Aug 2013)
 - OnMouseEnter and OnMouseLeave events have been added (#238)
 - Improved dpi scaling for VirtualTreeView and Header
