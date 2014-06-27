@@ -10299,6 +10299,7 @@ begin
         if coVisible in FOptions then
           Inc(RunningPos, FWidth);
       end;
+    FHeader.Treeview.UpdateHorizontalScrollBar(false);
   end;
 end;
 
@@ -32578,7 +32579,8 @@ begin
   begin
     if ColumnRight > ClientWidth then
       NewOffset := FEffectiveOffsetX + (ColumnRight - ClientWidth)
-    else if ColumnLeft < Header.Columns.GetVisibleFixedWidth then
+    else if (ColumnLeft < Header.Columns.GetVisibleFixedWidth) and
+            (ColumnRight > Header.Columns.GetVisibleFixedWidth) then
       NewOffset := FEffectiveOffsetX - (Header.Columns.GetVisibleFixedWidth - ColumnLeft);
     if NewOffset <> FEffectiveOffsetX then
     begin
