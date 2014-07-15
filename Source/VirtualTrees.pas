@@ -15388,7 +15388,6 @@ begin
     States := [vsInitialized, vsExpanded, vsHasChildren, vsVisible];
     TotalHeight := FDefaultNodeHeight;
     TotalCount := 1;
-    TotalHeight := FDefaultNodeHeight;
     NodeHeight := FDefaultNodeHeight;
     Align := 50;
   end;
@@ -16038,12 +16037,12 @@ begin
 
             // The actual node height will later be computed once it is clear
             // whether this node has a variable node height or not.
-            Inc(NewHeight, Child.NodeHeight);
+            Inc(NewHeight, NodeHeight[Child]);
           end;
 
           if vsExpanded in Node.States then
           begin
-            AdjustTotalHeight(Node, NewHeight, True);
+            AdjustTotalHeight(Node, NewHeight, False);
             if FullyVisible[Node] then
               Inc(Integer(FVisibleCount), Count);
           end;
@@ -16593,6 +16592,7 @@ begin
       BeginUpdate;
       InterruptValidation;
       SetChildCount(FRoot, Value);
+      AdjustTotalHeight(FRoot, FDefaultNodeHeight, True);
       EndUpdate;
     end;
 end;
