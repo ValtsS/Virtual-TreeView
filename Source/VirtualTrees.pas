@@ -15988,7 +15988,7 @@ var
   Child: PVirtualNode;
   Count: Integer;
   NewHeight: Integer;
-
+  lNodeHeight: Integer;
 begin
   if not (toReadOnly in FOptions.FMiscOptions) then
   begin
@@ -16035,14 +16035,17 @@ begin
             Dec(Remaining);
             Inc(Index);
 
-            // The actual node height will later be computed once it is clear
-            // whether this node has a variable node height or not.
-            Inc(NewHeight, NodeHeight[Child]);
+            if (toVariableNodeHeight in FOptions.FMiscOptions) then begin
+              lNodeHeight := Child.NodeHeight;
+              DoMeasureItem(Canvas, Node, lNodeHeight); //
+              Child.NodeHeight := lNodeHeight;
+            end;
+            Inc(NewHeight, Child.NodeHeight);
           end;
 
           if vsExpanded in Node.States then
           begin
-            AdjustTotalHeight(Node, NewHeight, False);
+            AdjustTotalHeight(Node, NewHeight, True);
             if FullyVisible[Node] then
               Inc(Integer(FVisibleCount), Count);
           end;
@@ -16592,7 +16595,6 @@ begin
       BeginUpdate;
       InterruptValidation;
       SetChildCount(FRoot, Value);
-      AdjustTotalHeight(FRoot, FDefaultNodeHeight, True);
       EndUpdate;
     end;
 end;
