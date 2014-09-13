@@ -30996,7 +30996,10 @@ begin
       NewNodeHeight := Node.NodeHeight;
         DoMeasureItem(Canvas, Node, NewNodeHeight);
       if NewNodeHeight <> Node.NodeHeight then
+      begin
+        DoMeasureItem(Canvas, Node, NewNodeHeight);
         SetNodeHeight(Node, NewNodeHeight);
+      end;
     end;
   end;
 end;
