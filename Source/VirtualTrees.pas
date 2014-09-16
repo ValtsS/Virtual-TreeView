@@ -5573,7 +5573,6 @@ var
     OffsetY := (IL.Height - DarkCheckImages.Height) div 2;
     for I := 21 to 24 do
     begin
-      BM.Canvas.Brush.Color := MaskColor;
       BM.Canvas.FillRect(Rect(0, 0, BM.Width, BM.Height));
       if Flat then
         FlatImages.Draw(BM.Canvas, OffsetX, OffsetY, I)
@@ -5592,7 +5591,6 @@ var
     ButtonType: Cardinal;
 
   begin
-    BM.Canvas.Brush.Color := MaskColor;
     BM.Canvas.FillRect(Rect(0, 0, BM.Width, BM.Height));
     if Index < 8 then
       ButtonType := DFCS_BUTTONRADIO
@@ -26944,7 +26942,7 @@ begin
 
       InvalidateToBottom(Parent);
       UpdateScrollbars(True);
-    end;
+   end;
   end
   else
     Result := nil;
@@ -33437,7 +33435,7 @@ var
 begin
   UpdateHorizontalRange;
 
-  if tsUpdating in FStates then
+  if (tsUpdating in FStates) or not HandleAllocated then
     exit;
 
   // Adjust effect scroll offset depending on bidi mode.
