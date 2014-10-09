@@ -17232,10 +17232,10 @@ var
 
 begin
   inherited;
-  AutoScale();
 
   if not (csLoading in ComponentState) then
   begin
+    AutoScale();
     PrepareBitmaps(True, False);
     if HandleAllocated then
       Invalidate;
