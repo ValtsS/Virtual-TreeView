@@ -4750,9 +4750,6 @@ begin
       EllipsisWidth := Size.cx;
     end;
 
-    if Width <= EllipsisWidth then
-      Result := ''
-    else
     begin
       // Do a binary search for the optimal string length which fits into the given width.
       L := 0;
@@ -4767,6 +4764,12 @@ begin
         else
           H := N - 1;
       end;
+      Inc(L);
+      if L >= Len then
+        Result := S
+      else if Width <= EllipsisWidth then
+        Result := ''
+      else
       Result := Copy(S, 1, L) + '...'
     end;
   end;
