@@ -1006,7 +1006,6 @@ type
     FImageRect: TRect;
     FHasImage: Boolean;
     fDefaultSortDirection: TSortDirection;
-    fSplitterHitTolerance: Integer; // For property SplitterHitTolerance
     function GetCaptionAlignment: TAlignment;
     function GetLeft: Integer;
     function IsBiDiModeStored: Boolean;
@@ -1307,6 +1306,7 @@ type
     FDragImage: TVTDragImage;          // drag image management during header drag
     FLastWidth: Integer;               // Used to adjust spring columns. This is the width of all visible columns,
                                        // not the header rectangle.
+    fSplitterHitTolerance: Integer; // For property SplitterHitTolerance
     procedure FontChanged(Sender: TObject);
     function GetMainColumn: TColumnIndex;
     function GetUseColumns: Boolean;
