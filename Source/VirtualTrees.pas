@@ -13853,7 +13853,7 @@ begin
   FStateChangeLink.Free;
   FCustomCheckChangeLink.Free;
   FScrollBarOptions.Free;
-  FOptions.Free;
+
 
   // The window handle must be destroyed before the header is freed because it is needed in WM_NCDESTROY.
   if HandleAllocated then
@@ -13864,8 +13864,8 @@ begin
     DeleteObject(FDottedBrush);
   FDottedBrush := 0;
 
-  FHeader.Free;
-  FHeader := nil;
+  FreeAndNil(FHeader);
+  FreeAndNil(FOptions); // WM_NCDESTROY accesses FOptions
 
   FreeMem(FRoot);
 
