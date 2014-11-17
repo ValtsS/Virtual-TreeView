@@ -10278,7 +10278,7 @@ var
   I, RunningPos: Integer;
 
 begin
-  if not FNeedPositionsFix and (Force or (UpdateCount = 0)) then
+  if not (csDestroying in FHeader.Treeview.ComponentState) and not FNeedPositionsFix and (Force or (UpdateCount = 0)) then
   begin
     RunningPos := 0;
     for I := 0 to High(FPositionToIndex) do
