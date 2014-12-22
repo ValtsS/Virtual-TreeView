@@ -21738,6 +21738,8 @@ end;
 procedure TBaseVirtualTree.DoMeasureItem(TargetCanvas: TCanvas; Node: PVirtualNode; var NodeHeight: Integer);
 
 begin
+  if not (vsInitialized in Node.States) then
+    InitNode(Node);
   if Assigned(FOnMeasureItem) then
     FOnMeasureItem(Self, TargetCanvas, Node, NodeHeight);
 end;
