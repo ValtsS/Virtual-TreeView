@@ -27836,8 +27836,10 @@ begin
       end;
     end;
 
-    if FUpdateCount = 0 then
-      DoUpdating(usEnd)
+    if FUpdateCount = 0 then begin
+      DoUpdating(usEnd);
+      EnsureNodeSelected();
+    end
     else
       DoUpdating(usUpdate);
   end;
