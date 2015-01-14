@@ -1,3 +1,6 @@
+V5.5.4:
+* Fixed #506: Autosort is being triggered at design-time
+
   * If toAutoChangeScale is set in AutoOptions, the columns widths are now adjusted too.
 V5.2: (09 Aug 2013)
 - OnMouseEnter and OnMouseLeave events have been added (#238)
