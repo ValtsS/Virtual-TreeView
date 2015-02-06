@@ -1006,6 +1006,7 @@ type
     FImageRect: TRect;
     FHasImage: Boolean;
     fDefaultSortDirection: TSortDirection;
+    fSplitterHitTolerance: Integer; // For property SplitterHitTolerance
     function GetCaptionAlignment: TAlignment;
     function GetLeft: Integer;
     function IsBiDiModeStored: Boolean;
@@ -1330,7 +1331,7 @@ type
     FDragStart: TPoint;                // initial mouse drag position
     FTrackStart: TPoint;               // client coordinates of the tracking start point
     FTrackPoint: TPoint;               // Client coordinate where the tracking started.
-    
+
     function CanSplitterResize(P: TPoint): Boolean;
     function CanWriteColumns: Boolean; virtual;
     procedure ChangeScale(M, D: Integer); virtual;
@@ -1399,6 +1400,7 @@ type
     property Options: TVTHeaderOptions read FOptions write SetOptions default [hoColumnResize, hoDrag, hoShowSortGlyphs];
     property ParentFont: Boolean read FParentFont write SetParentFont default False;
     property PopupMenu: TPopupMenu read FPopupMenu write FPopUpMenu;
+    property SplitterHitTolerance: Integer read fSplitterHitTolerance write fSplitterHitTolerance default 8; // The area in pixels around a spliter which is sensitive for resizing
     property SortColumn: TColumnIndex read FSortColumn write SetSortColumn default NoColumn;
     property SortDirection: TSortDirection read FSortDirection write SetSortDirection default sdAscending;
     property Style: TVTHeaderStyle read FStyle write SetStyle default hsThickButtons;
@@ -11420,6 +11422,7 @@ begin
     Transparency := 140;
   end;
 
+  fSplitterHitTolerance := 8;
   FFixedAreaConstraints := TVTFixedAreaConstraints.Create(Self);
   FFixedAreaConstraints.OnChange := FixedAreaConstraintsChanged;
 end;
@@ -11800,7 +11803,6 @@ function TVTHeader.DetermineSplitterIndex(P: TPoint): Boolean;
 //       columns possible.
 
 var
-  I,
   VisibleFixedWidth: Integer;
   SplitPoint: Integer;
 
@@ -11817,14 +11819,17 @@ var
 
   //--------------- end local function ----------------------------------------
 
+var
+  I: Integer;
+  LeftTolerance: Integer; // The area left of the column divider which allows column resizing
 begin
   Result := False;
-  FColumns.FTrackIndex := NoColumn;
-
-  VisibleFixedWidth := FColumns.GetVisibleFixedWidth;
 
   if FColumns.Count > 0 then
   begin
+    FColumns.FTrackIndex := NoColumn;
+    VisibleFixedWidth := FColumns.GetVisibleFixedWidth;
+    LeftTolerance := Round(SplitterHitTolerance * 0.6);
     if Treeview.UseRightToLeftAlignment then
     begin
       SplitPoint := -Treeview.FEffectiveOffsetX;
@@ -11835,7 +11840,7 @@ begin
         with FColumns, Items[FPositionToIndex[I]] do
           if coVisible in FOptions then
           begin
-            if IsNearBy(coFixed in FOptions, 5, 3) then
+            if IsNearBy(coFixed in FOptions, LeftTolerance, SplitterHitTolerance - LeftTolerance) then
             begin
               if CanSplitterResize(P, FPositionToIndex[I]) then
               begin
@@ -11860,7 +11865,7 @@ begin
         with FColumns, Items[FPositionToIndex[I]] do
           if coVisible in FOptions then
           begin
-            if IsNearBy(coFixed in FOptions, 3, 5) then
+            if IsNearBy(coFixed in FOptions, SplitterHitTolerance - LeftTolerance, LeftTolerance) then
             begin
               if CanSplitterResize(P, FPositionToIndex[I]) then
               begin
