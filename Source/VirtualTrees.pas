@@ -6331,12 +6331,11 @@ begin
           Invalidate;
         if not (csDesigning in ComponentState) then
         begin
-          if toFullRepaintOnResize in TobeSet + ToBeCleared then
+          if toAcceptOLEDrop in ToBeCleared then
+            RevokeDragDrop(Handle);
             RecreateWnd;
           if toAcceptOLEDrop in ToBeSet then
             RegisterDragDrop(Handle, DragManager as IDropTarget);
-          if toAcceptOLEDrop in ToBeCleared then
-            RevokeDragDrop(Handle);
         end;
       end;
   end;
