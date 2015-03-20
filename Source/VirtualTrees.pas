@@ -24550,7 +24550,7 @@ begin
           Include(Destination.States, vsHasChildren);
           AdjustTotalCount(Destination, Node.TotalCount, True);
           // Add the new node's height only if its parent is expanded.
-          if (vsExpanded in Node.Parent.States) and (vsVisible in Node.States) then begin
+          if (vsExpanded in Node.Parent.States) and (vsVisible in Node.States) then
           begin
             AdjustTotalHeight(Destination, Node.TotalHeight, True);
             Inc(FVisibleCount, CountVisibleChildren(Node) + Cardinal(IfThen(IsEffectivelyVisible[Node], 1)));
