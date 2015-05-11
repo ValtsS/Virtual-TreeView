@@ -22851,7 +22851,8 @@ end;
 
 procedure TBaseVirtualTree.EnsureNodeSelected;
 begin
-  if (toAlwaysSelectNode in TreeOptions.SelectionOptions) and (GetFirstSelected() = nil) and not SelectionLocked then begin
+  if (toAlwaysSelectNode in TreeOptions.SelectionOptions) and (GetFirstSelected() = nil) and not SelectionLocked and not IsEmpty then
+  begin
     if Assigned(fNextNodeToSelect) then
       Selected[fNextNodeToSelect] := True
     else if Self.Focused then
@@ -34635,7 +34636,7 @@ begin
         Exclude(fStates, tsPreviouslySelectedLocked);
       end;
       // if a there is a selected node now, then make sure that it is visible
-      if Self.GetFirstSelected <> nil then
+      if (Self.GetFirstSelected <> nil) and (UpdateCount = 0) then
         Self.ScrollIntoView(Self.GetFirstSelected, True);
     end;
   end
