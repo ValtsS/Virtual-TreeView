@@ -18039,7 +18039,7 @@ var
   ClearPending,
   NeedInvalidate,
   DoRangeSelect,
-  HandleMultiSelect: Boolean;
+  PerformMultiSelect: Boolean;
   Context: Integer;
   ParentControl: TWinControl;
   R: TRect;
@@ -18080,10 +18080,10 @@ begin
 
       if (CharCode in [VK_HOME, VK_END, VK_PRIOR, VK_NEXT, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_BACK, VK_TAB]) and (RootNode.FirstChild<>nil) then
       begin
-        HandleMultiSelect := (ssShift in Shift) and (toMultiSelect in FOptions.FSelectionOptions) and not IsEditing;
+        PerformMultiSelect := (ssShift in Shift) and (toMultiSelect in FOptions.FSelectionOptions) and not IsEditing;
 
         // Flag to avoid range selection in case of single node advance.
-        DoRangeSelect := (CharCode in [VK_HOME, VK_END, VK_PRIOR, VK_NEXT]) and HandleMultiSelect and not IsEditing;
+        DoRangeSelect := (CharCode in [VK_HOME, VK_END, VK_PRIOR, VK_NEXT]) and PerformMultiSelect and not IsEditing;
 
         NeedInvalidate := DoRangeSelect or (FSelectionCount > 1);
         ActAsGrid := toGridExtensions in FOptions.FMiscOptions;
@@ -18274,7 +18274,7 @@ begin
                 begin
                   if not EndEditNode then
                     exit;
-                  if HandleMultiSelect and (CompareNodePositions(LastFocused, FRangeAnchor) > 0) and
+                  if (not PerformMultiSelect or (CompareNodePositions(LastFocused, FRangeAnchor) > 0)) and
                     Assigned(FFocusedNode) then
                     RemoveFromSelection(FFocusedNode);
                   if FFocusedColumn <= NoColumn then
@@ -18302,7 +18302,7 @@ begin
                 begin
                   if not EndEditNode then
                     exit;
-                  if HandleMultiSelect and (CompareNodePositions(LastFocused, FRangeAnchor) < 0) and
+                  if (not PerformMultiSelect or (CompareNodePositions(LastFocused, FRangeAnchor) < 0)) and
                     Assigned(FFocusedNode) then
                     RemoveFromSelection(FFocusedNode);
                   if FFocusedColumn <= NoColumn then
@@ -18345,7 +18345,7 @@ begin
                         Node := nil;
                       if Assigned(Node) then
                       begin
-                        if HandleMultiSelect then
+                        if PerformMultiSelect then
                         begin
                           // and a third special case
                           if FFocusedNode.Index > 0 then
@@ -18388,7 +18388,7 @@ begin
                       Node := GetFirstVisibleChild(FFocusedNode);
                       if Assigned(Node) then
                       begin
-                        if HandleMultiSelect and (CompareNodePositions(Node, FRangeAnchor) < 0) then
+                        if PerformMultiSelect and (CompareNodePositions(Node, FRangeAnchor) < 0) then
                           RemoveFromSelection(FFocusedNode);
                         FocusedNode := Node;
                       end;
