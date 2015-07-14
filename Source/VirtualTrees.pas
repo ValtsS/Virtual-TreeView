@@ -6336,6 +6336,14 @@ begin
             RecreateWnd;
           if toAcceptOLEDrop in ToBeSet then
             RegisterDragDrop(Handle, DragManager as IDropTarget);
+          if toVariableNodeHeight in ToBeSet then begin
+            BeginUpdate();
+            try
+              ReInitNode(nil, True);
+            finally
+              EndUpdate();
+            end;//try..finally
+          end;//if toVariableNodeHeight
         end;
       end;
   end;
@@ -32438,7 +32446,6 @@ begin
   begin
     // Remove dynamic styles.
     Node.States := Node.States - [vsChecking, vsCutOrCopy, vsDeleting, vsHeightMeasured];
-    InitNode(Node);
   end;
 
   if Recursive then
