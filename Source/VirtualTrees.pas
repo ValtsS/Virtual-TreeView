@@ -16011,12 +16011,12 @@ begin
       if NewChildCount <> Node.ChildCount then
       begin
         InterruptValidation;
-        NewHeight := 0;
 
         if NewChildCount > Node.ChildCount then
         begin
           Remaining := NewChildCount - Node.ChildCount;
           Count := Remaining;
+          NewHeight := Node.TotalHeight;
 
           // New nodes to add.
           if Assigned(Node.LastChild) then
@@ -16051,11 +16051,7 @@ begin
           end;
 
           if vsExpanded in Node.States then
-          begin
-            if Node = FRoot then
-              Inc(NewHeight, Node.NodeHeight);
             AdjustTotalHeight(Node, NewHeight, False);
-          end;
 
           AdjustTotalCount(Node, Count, True);
           Node.ChildCount := NewChildCount;
