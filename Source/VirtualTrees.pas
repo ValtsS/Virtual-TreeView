@@ -16082,6 +16082,8 @@ begin
           StructureChange(nil, crChildAdded)
         else
           StructureChange(Node, crChildAdded);
+
+        ReinitNode(Node, True);
       end;
     end;
   end;
