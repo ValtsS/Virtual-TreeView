@@ -32450,6 +32450,8 @@ begin
   begin
     // Remove dynamic styles.
     Node.States := Node.States - [vsChecking, vsCutOrCopy, vsDeleting, vsHeightMeasured];
+    if vsInitialized in Node.States then
+      InitNode(Node);
   end;
 
   if Recursive then
