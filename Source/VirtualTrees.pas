@@ -13846,7 +13846,8 @@ begin
   FClipboardFormats := TClipboardFormats.Create(Self);
   FOptions := GetOptionsClass.Create(Self);
 
-  AddThreadReference;
+  if not (csDesigning in ComponentState) then //Don't cerate worker thread in IDE, there is no use for it
+    AddThreadReference;
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -26725,7 +26726,7 @@ begin
   InterruptValidation;
 
   FStartIndex := 0;
-  if (tsValidationNeeded in FStates) and (FVisibleCount > CacheThreshold) then
+  if (tsValidationNeeded in FStates) and (FVisibleCount > CacheThreshold) and Assigned(WorkerThread) then
   begin
     // Tell the thread this tree needs actually something to do.
     WorkerThread.AddTree(Self);
