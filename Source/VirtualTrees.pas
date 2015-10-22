@@ -2319,7 +2319,6 @@ type
     procedure SetCheckImageKind(Value: TCheckImageKind);
     procedure SetCheckState(Node: PVirtualNode; Value: TCheckState);
     procedure SetCheckType(Node: PVirtualNode; Value: TCheckType);
-    procedure SetChildCount(Node: PVirtualNode; NewChildCount: Cardinal);
     procedure SetClipboardFormats(const Value: TClipboardFormats);
     procedure SetColors(const Value: TVTColors);
     procedure SetCustomCheckImages(const Value: TCustomImageList);
@@ -2651,6 +2650,7 @@ type
     procedure ResetRangeAnchor; virtual;
     procedure RestoreFontChangeEvent(Canvas: TCanvas); virtual;
     procedure SelectNodes(StartNode, EndNode: PVirtualNode; AddOnly: Boolean); virtual;
+    procedure SetChildCount(Node: PVirtualNode; NewChildCount: Cardinal); virtual;
     procedure SetFocusedNodeAndColumn(Node: PVirtualNode; Column: TColumnIndex); virtual;
     procedure SkipNode(Stream: TStream); virtual;
     procedure StartOperation(OperationKind: TVTOperationKind);
@@ -3248,6 +3248,7 @@ type
     procedure PaintStaticText(const PaintInfo: TVTPaintInfo; TextOutFlags: Integer; const Text: UnicodeString);
     procedure ReadText(Reader: TReader);
     procedure SetDefaultText(const Value: UnicodeString);
+    procedure ResetInternalData(Node: PVirtualNode; Recursive: Boolean);
     procedure SetOptions(const Value: TCustomStringTreeOptions);
     procedure SetText(Node: PVirtualNode; Column: TColumnIndex; const Value: UnicodeString);
     procedure WriteText(Writer: TWriter);
@@ -3285,6 +3286,7 @@ type
       ChunkSize: Integer): Boolean; override;
     procedure ReadOldStringOptions(Reader: TReader);
     function RenderOLEData(const FormatEtcIn: TFormatEtc; out Medium: TStgMedium; ForClipboard: Boolean): HResult; override;
+    procedure SetChildCount(Node: PVirtualNode; NewChildCount: Cardinal); override;
     procedure WriteChunks(Stream: TStream; Node: PVirtualNode); override;
 
     property DefaultText: UnicodeString read FDefaultText write SetDefaultText stored False;
@@ -16084,7 +16086,9 @@ begin
         else
           StructureChange(Node, crChildAdded);
 
-        ReinitNode(Node, True);
+        // One may want to reinit the nodes here, especially to fix Issue #572 but that may trigger
+        // stack overflows in user code that calls AddChild inside the OnInitNode or OnInitChildren events.
+        //ReinitNode(Node, True);
       end;
     end;
   end;
@@ -36717,21 +36721,56 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure TCustomVirtualStringTree.ReinitNode(Node: PVirtualNode; Recursive: Boolean);
+procedure TCustomVirtualStringTree.ResetInternalData(Node: PVirtualNode; Recursive: Boolean);
 
 var
   Data: PInteger;
+  Run: PVirtualNode;
 
 begin
-  inherited;
   // Reset node width so changed text attributes are applied correctly.
   if Assigned(Node) and (Node <> FRoot) then
   begin
     Data := InternalData(Node);
     if Assigned(Data) then
       Data^ := 0;
-    // vsHeightMeasured is already removed in the base tree.
+
+    Exclude(Node.States, vsHeightMeasured);
   end;
+
+  if Assigned(Node) then
+    Run := Node.FirstChild
+  else
+    Run := FRoot.FirstChild;
+
+  while Assigned(Run) do
+  begin
+    ResetInternalData(Run, Recursive);
+    Run := Run.NextSibling;
+  end;
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+procedure TCustomVirtualStringTree.ReinitNode(Node: PVirtualNode; Recursive: Boolean);
+
+begin
+  inherited;
+
+  ResetInternalData(Node, False);  // False because there already is a loop inside ReinitNode
+end;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+procedure TCustomVirtualStringTree.SetChildCount(Node: PVirtualNode; NewChildCount: Cardinal);
+
+begin
+  inherited;
+
+  // See comment at the end of TBaseVirtualTree.SetChildCount
+  //ReinitChildren(Node, True);
+
+  ResetInternalData(Node, True);
 end;
 
 //----------------- TVirtualStringTree ---------------------------------------------------------------------------------
