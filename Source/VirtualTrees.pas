@@ -19371,6 +19371,8 @@ begin
     Changed := InternalAddToSelection(FSingletonNodeArray, 1, False);
     if Changed then
     begin
+      if (SelectedCount = 1) then
+        FocusedNode := Node; // if only one node is selected, make sure the focused node changes with the selected node
       InvalidateNode(Node);
       Change(Node);
     end;
