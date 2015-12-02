@@ -4103,6 +4103,7 @@ type
   end;
 
 var
+  WorkerThread: TWorkerThread;
   gWatcher: TCriticalSection = nil;
   WorkEvent: THandle;
   LightCheckImages,                    // global light check images
@@ -4116,6 +4117,8 @@ var
   SystemFlatCheckImages: TImageList;   // global flat system check images
   gInitialized: Integer = 0;           // >0 if global structures have been initialized; otherwise 0
   NeedToUnitialize: Boolean;           // True if the OLE subsystem could be initialized successfully.
+  Initialized: Boolean;                // True if global structures have been initialized.
+
 
 //----------------- TClipboardFormats ----------------------------------------------------------------------------------
 
@@ -16343,7 +16346,7 @@ begin
       if not (toShowFilteredNodes in FOptions.FPaintOptions) then
       begin
 
-         if (vsInitializing in Node.States) and not (vsHasChildren in Node.States) then
+         if not (vsHasChildren in Node.States) then
            AdjustTotalHeight(Node, 0, False)
          else
            AdjustTotalHeight(Node, -Integer(NodeHeight[Node]), True);
