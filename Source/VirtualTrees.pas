@@ -4103,9 +4103,8 @@ type
   end;
 
 var
-  WorkerThread: TWorkerThread;
+  gWatcher: TCriticalSection = nil;
   WorkEvent: THandle;
-  Watcher: TCriticalSection;
   LightCheckImages,                    // global light check images
   DarkCheckImages,                     // global heavy check images
   LightTickImages,                     // global light tick images
@@ -4115,7 +4114,7 @@ var
   UtilityImages,                       // some small additional images (e.g for header dragging)
   SystemCheckImages,                   // global system check images
   SystemFlatCheckImages: TImageList;   // global flat system check images
-  Initialized: Boolean;                // True if global structures have been initialized.
+  gInitialized: Integer = 0;           // >0 if global structures have been initialized; otherwise 0
   NeedToUnitialize: Boolean;           // True if the OLE subsystem could be initialized successfully.
 
 //----------------- TClipboardFormats ----------------------------------------------------------------------------------
@@ -5513,7 +5512,7 @@ var
   Dest: TRect;
 
 begin
-  Watcher.Enter;
+  gWatcher.Enter();
   try
     // Since we want the image list appearing in the correct system colors, we have to remap its colors.
     Images := TBitmap.Create;
@@ -5546,7 +5545,7 @@ begin
       OneImage.Free;
     end;
   finally
-    Watcher.Leave;
+    gWatcher.Leave();
   end;
 end;
 
@@ -5777,7 +5776,7 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure InitializeGlobalStructures;
+procedure InitializeGlobalStructures();
 
 // initialization of stuff global to the unit
 
@@ -5785,7 +5784,11 @@ var
   Flags: Cardinal;
 
 begin
-  Initialized := True;
+  if (gInitialized > 0) or (InterlockedIncrement(gInitialized) <> 1) then // Ensure threadsafe that this code is executed only once
+    exit;
+
+  // This watcher is used whenever a global structure could be modified by more than one thread.
+  gWatcher := TCriticalSection.Create();
 
   // For the drag image a fast MMX blend routine is used. We have to make sure MMX is available.
   MMXAvailable := HasMMX;
@@ -5869,12 +5872,15 @@ end;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-procedure FinalizeGlobalStructures;
+procedure FinalizeGlobalStructures();
 
 var
   HintWasEnabled: Boolean;
 
 begin
+  if gInitialized = 0 then
+    exit; // Was not initialized
+
   LightCheckImages.Free;
   LightCheckImages := nil;
   DarkCheckImages.Free;
@@ -5907,6 +5913,8 @@ begin
     if HintWasEnabled then
       Application.ShowHint := True;
   end;
+  gWatcher.Free;
+  gWatcher := nil;
 end;
 
 //----------------- TCriticalSection -----------------------------------------------------------------------------------
@@ -13763,8 +13771,7 @@ end;
 constructor TBaseVirtualTree.Create(AOwner: TComponent);
 
 begin
-  if not Initialized then
-    InitializeGlobalStructures;
+  InitializeGlobalStructures();
 
   inherited;
 
@@ -36881,15 +36888,9 @@ initialization
   Initialized := False;
   NeedToUnitialize := False;
 
-  // This watcher is used whenever a global structure could be modified by more than one thread.
-  Watcher := TCriticalSection.Create;
 finalization
-  if Initialized then
-    FinalizeGlobalStructures;
-
+  FinalizeGlobalStructures();
   InternalClipboardFormats.Free;
   InternalClipboardFormats := nil;
-  Watcher.Free;
-  Watcher := nil;
 
 end.
