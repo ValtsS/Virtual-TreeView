@@ -11802,9 +11802,9 @@ var
   i: Integer;
 begin
   // This method is only executed if toAutoChangeScale is set
+  Self.Height := MulDiv(FHeight, M, D);
   if not ParentFont then
     FFont.Size := MulDiv(FFont.Size, M, D);
-  Self.Height := MulDiv(fHeight, M, D);
   // Scale the columns widths too
   for i := 0 to FColumns.Count - 1 do begin
     Self.FColumns[i].Width := MulDiv(Self.FColumns[i].Width, M, D)
@@ -19800,13 +19800,16 @@ procedure TBaseVirtualTree.ChangeScale(M, D: Integer);
 
 begin
   inherited;
-
   if (M <> D) and (toAutoChangeScale in FOptions.FAutoOptions) then
   begin
-    SetDefaultNodeHeight(MulDiv(FDefaultNodeHeight, M, D));
-    Indent := MulDiv(Indent, M, D);
-    FHeader.ChangeScale(M, D);
+    if sfHeight in ScalingFlags then begin
+      FHeader.ChangeScale(M, D);
+      SetDefaultNodeHeight(MulDiv(FDefaultNodeHeight, M, D));
+    end;
+    if sfHeight in ScalingFlags then
+      Indent := MulDiv(Indent, M, D);
   end;
+  inherited ChangeScale(M, D);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
