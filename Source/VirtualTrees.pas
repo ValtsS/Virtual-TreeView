@@ -18536,7 +18536,7 @@ begin
             if not (tsIncrementalSearching in FStates) then
             begin
               if ssCtrl in Shift then
-                if not (toReverseFullExpandHotKey in TreeOptions.MiscOptions) and (ssShift in Shift) then
+                if (toReverseFullExpandHotKey in TreeOptions.MiscOptions) xor (ssShift in Shift) then
                   FullExpand
                 else
                   FHeader.AutoFitColumns
@@ -18550,7 +18550,7 @@ begin
             if not (tsIncrementalSearching in FStates) then
             begin
               if ssCtrl in Shift then
-                if not (toReverseFullExpandHotKey in TreeOptions.MiscOptions) and (ssShift in Shift) then
+                if (toReverseFullExpandHotKey in TreeOptions.MiscOptions) xor (ssShift in Shift) then
                   FullCollapse
                 else
                   FHeader.RestoreColumns
