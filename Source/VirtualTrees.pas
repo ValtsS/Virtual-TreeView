@@ -27342,7 +27342,7 @@ end;
 procedure TBaseVirtualTree.Clear;
 
 begin
-  if not (toReadOnly in FOptions.FMiscOptions) or (csDestroying in ComponentState) then
+  if not IsEmpty and not (toReadOnly in FOptions.FMiscOptions) or (csDestroying in ComponentState) then
   begin
     BeginUpdate;
     try
