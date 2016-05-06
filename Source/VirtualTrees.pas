@@ -22911,7 +22911,7 @@ begin
         Selected[GetFirstVisible] := True;
     end;// if nothing selected
     EnsureNodeFocused();
-    Self.ScrollIntoView(Self.GetFirstSelected, True);
+    Self.ScrollIntoView(Self.GetFirstSelected, False);
   end;//if
 end;
 
