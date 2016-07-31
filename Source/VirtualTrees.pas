@@ -27185,6 +27185,7 @@ var
   lTextHeight: Cardinal;
 begin
   if HandleAllocated and (toAutoChangeScale in TreeOptions.AutoOptions) then
+  begin
     Canvas.Font.Assign(Self.Font);
     lTextHeight := Canvas.TextHeight('Tg');
     if (lTextHeight > Self.DefaultNodeHeight) then
