@@ -28671,7 +28671,7 @@ begin
   Result := GetFirstChild(Node);
 
   if Assigned(Result) and (not (vsVisible in Result.States) or
-     (not IncludeFiltered and IsEffectivelyFiltered[Node])) then
+     (not IncludeFiltered and IsEffectivelyFiltered[Result])) then
     Result := GetNextVisibleSibling(Result, IncludeFiltered);
 end;
 
@@ -28686,7 +28686,7 @@ begin
     Node := FRoot;
   Result := Node.FirstChild;
   if Assigned(Result) and (not (vsVisible in Result.States) or
-     (not IncludeFiltered and IsEffectivelyFiltered[Node])) then
+     (not IncludeFiltered and IsEffectivelyFiltered[Result])) then
     Result := GetNextVisibleSiblingNoInit(Result, IncludeFiltered);
 end;
 
