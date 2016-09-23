@@ -29104,7 +29104,7 @@ begin
       Result := nil;
 
   if Assigned(Result) and (not (vsVisible in Result.States) or
-     (not IncludeFiltered and IsEffectivelyFiltered[Node])) then
+     (not IncludeFiltered and IsEffectivelyFiltered[Result])) then
     Result := GetPreviousVisibleSibling(Result, IncludeFiltered);
 
   if Assigned(Result) and not (vsInitialized in Result.States) then
@@ -29127,7 +29127,7 @@ begin
       Result := nil;
 
   if Assigned(Result) and (not (vsVisible in Result.States) or
-     (not IncludeFiltered and IsEffectivelyFiltered[Node])) then
+     (not IncludeFiltered and IsEffectivelyFiltered[Result])) then
     Result := GetPreviousVisibleSiblingNoInit(Result, IncludeFiltered);
 end;
 
