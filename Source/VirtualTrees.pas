@@ -19887,11 +19887,6 @@ begin
   begin
     if (M <> D) then
     begin
-      // It is important to evaluate the TScalingFlags before calling inherited, becuase they are differetn afterwards!
-      if csLoading in ComponentState then
-        Flags := ScalingFlags
-      else
-        Flags := DefaultScalingFlags; // Important for #677
       if (sfHeight in Flags) then begin
         FHeader.ChangeScale(M, D);
         SetDefaultNodeHeight(MulDiv(FDefaultNodeHeight, M, D));
