@@ -21451,8 +21451,8 @@ begin
     FDropTargetNode := nil;
   if Node = FLastStructureChangeNode then
     FLastStructureChangeNode := nil;
-
-  if Node=fNextNodeToSelect then
+  if Node = FFocusedNode then
+    FFocusedNode := nil;
     FNextNodeToSelect := Node.Parent;
   if Self.UpdateCount = 0 then begin
     // Omit this stuff if the control is in a BeginUpdate/EndUpdate bracket to increase performance
