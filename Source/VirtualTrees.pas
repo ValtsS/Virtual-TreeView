@@ -22533,7 +22533,7 @@ begin
   if IsWinVistaOrAbove then begin
     lDragEffect := DWord(DragEffect);
     SHDoDragDrop(Self.Handle, DataObject, nil, AllowedEffects, @lDragEffect); // supports drag hints on Windows Vista and later
-    DragEffect := LongInt(lDragEffect);
+    DragEffect := Integer(lDragEffect);
   end
   else
   {$endif}
