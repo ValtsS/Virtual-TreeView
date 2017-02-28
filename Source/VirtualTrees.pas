@@ -18255,6 +18255,10 @@ begin
                 begin
                   if not ActAsGrid or (ssCtrl in Shift) then
                     FocusedNode := Node;
+                  //fix: In grid mode, if full row select option is ON,
+                  //then also go to the node determined from the earlier logic
+                  if ActAsGrid and (toFullRowSelect in FOptions.FSelectionOptions) then
+                    FocusedNode := Node;
                   if ActAsGrid and not (toFullRowSelect in FOptions.FSelectionOptions) then
                     FocusedColumn := NewColumn;
                 end;
