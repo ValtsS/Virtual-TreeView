@@ -33726,6 +33726,8 @@ begin
 
       ScrollInfo.fMask := SIF_ALL or ScrollMasks[FScrollBarOptions.AlwaysVisible];
       SetScrollInfo(Handle, SB_HORZ, ScrollInfo, DoRepaint);
+      if DoRepaint then
+        RedrawWindow(Handle, nil, 0, RDW_FRAME or RDW_INVALIDATE); // Fixes issue #698
     end
     else
     begin
