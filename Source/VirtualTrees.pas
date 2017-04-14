@@ -2964,6 +2964,7 @@ type
     function GetNodeAt(X, Y: Integer; Relative: Boolean; var NodeTop: Integer): PVirtualNode; overload;
     function GetNodeData(Node: PVirtualNode): Pointer;
     function GetNodeLevel(Node: PVirtualNode): Cardinal;
+    function GetNodeLevelForSelectConstraint(Node: PVirtualNode): integer;
     function GetPrevious(Node: PVirtualNode; ConsiderChildrenAbove: Boolean = False): PVirtualNode;
     function GetPreviousChecked(Node: PVirtualNode; State: TCheckState = csCheckedNormal;
       ConsiderChildrenAbove: Boolean = False): PVirtualNode;
@@ -18559,7 +18560,7 @@ begin
         if Shift = [] then
         begin
           FRangeAnchor := FFocusedNode;
-          FLastSelectionLevel := GetNodeLevel(FFocusedNode);
+          FLastSelectionLevel := GetNodeLevelForSelectConstraint(FFocusedNode);
         end;
 
         if Assigned(FFocusedNode) then
@@ -24045,9 +24046,9 @@ begin
   // Keep this node's level in case we need it for constraint selection.
   if (FRoot.ChildCount > 0) and ShiftEmpty or (FSelectionCount = 0) then
     if Assigned(HitInfo.HitNode) then
-      FLastSelectionLevel := GetNodeLevel(HitInfo.HitNode)
+      FLastSelectionLevel := GetNodeLevelForSelectConstraint(HitInfo.HitNode)
     else
-      FLastSelectionLevel := GetNodeLevel(GetLastVisibleNoInit(nil, True));
+      FLastSelectionLevel := GetNodeLevelForSelectConstraint(GetLastVisibleNoInit(nil, True));
 
   // immediate clearance
   // Determine for the right mouse button if there is a popup menu. In this case and if drag'n drop is pending
@@ -24491,7 +24492,7 @@ begin
   begin
     Constrained := toLevelSelectConstraint in FOptions.FSelectionOptions;
     if Constrained and (FLastSelectionLevel = -1) then
-      FLastSelectionLevel := GetNodeLevel(NewItems[0]);
+      FLastSelectionLevel := GetNodeLevelForSelectConstraint(NewItems[0]);
     SiblingConstrained := toSiblingSelectConstraint in FOptions.FSelectionOptions;
     if SiblingConstrained and (FRangeAnchor = nil) then
       FRangeAnchor := NewItems[0];
@@ -30023,6 +30024,19 @@ begin
     end;
   end;
 end;
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// Function introduced to avoid spaghetti code to fix setting of FLastSelectionLevel
+// at various places that now needs to avoid setting it for a disabled node
+function TBaseVirtualTree.GetNodeLevelForSelectConstraint(Node: PVirtualNode): integer;
+begin
+  if Assigned(Node) and not (vsDisabled in Node.States) then
+    result := GetNodeLevel(Node)
+  else
+    result := -1;
+end;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
