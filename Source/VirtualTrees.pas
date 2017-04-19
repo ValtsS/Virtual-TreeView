@@ -1334,6 +1334,7 @@ type
     FDragStart: TPoint;                // initial mouse drag position
     FTrackStart: TPoint;               // client coordinates of the tracking start point
     FTrackPoint: TPoint;               // Client coordinate where the tracking started.
+    FDoingAutoFitColumns: boolean;     // Flag to avoid using the stored width for Main column
 
     function CanSplitterResize(P: TPoint): Boolean;
     function CanWriteColumns: Boolean; virtual;
@@ -1388,6 +1389,7 @@ type
     property States: THeaderStates read FStates;
     property Treeview: TBaseVirtualTree read FOwner;
     property UseColumns: Boolean read GetUseColumns;
+    property doingAutoFitColumns: boolean read FDoingAutoFitColumns;
   published
     property AutoSizeIndex: TColumnIndex read FAutoSizeIndex write SetAutoSizeIndex;
     property Background: TColor read FBackground write SetBackground default clBtnFace;
@@ -11478,6 +11480,8 @@ begin
   fSplitterHitTolerance := 8;
   FFixedAreaConstraints := TVTFixedAreaConstraints.Create(Self);
   FFixedAreaConstraints.OnChange := FixedAreaConstraintsChanged;
+
+  FDoingAutoFitColumns := false;
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -13145,6 +13149,7 @@ begin
     Exit; // nothing to do
 
   TreeView.StartOperation(okAutoFitColumns);
+  FDoingAutoFitColumns := true;
   try
     if Assigned(TreeView.FOnBeforeAutoFitColumns) then
       TreeView.FOnBeforeAutoFitColumns(Self, SmartAutoFitType);
@@ -13157,6 +13162,7 @@ begin
 
   finally
     Treeview.EndOperation(okAutoFitColumns);
+    FDoingAutoFitColumns := false;
   end;
 end;
 
@@ -35136,7 +35142,8 @@ begin
       if Assigned(Data) then
       begin
         Result := Data^;
-        if Result = 0 then
+        if (Result = 0)
+           or FHeader.doingAutoFitColumns then
         begin
           Data^ := CalculateTextWidth(Canvas, Node, Column, Text[Node, Column]);
           Result := Data^;
