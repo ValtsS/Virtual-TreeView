@@ -19792,8 +19792,8 @@ var
   RemainingSteps,
   NextTimeStep,
   CurrentStep,
-  StartTime,
-  CurrentTime: Cardinal;
+  StartTime: Cardinal;
+  CurrentTime: Int64;
 
 begin
   if not (tsInAnimation in FStates) and (Duration > 0) then
@@ -19842,7 +19842,7 @@ begin
             RemainingSteps := RemainingTime div StepSize;
           until (RemainingSteps <= 0) or ((RemainingTime div RemainingSteps) >= 1);
         end;
-        CurrentStep := Cardinal(Steps) - RemainingSteps;
+        CurrentStep := Steps - RemainingSteps;
       end;
 
       if not Application.Terminated then
@@ -20830,7 +20830,7 @@ begin
           FDragScrollStart := timeGetTime;
         // Reset any scroll direction to avoid scroll in the case the user is dragging and the auto scroll time has not
         // yet elapsed.
-        if ((timeGetTime - FDragScrollStart) < FAutoScrollDelay) then
+        if ((Int64(timeGetTime) - FDragScrollStart) < FAutoScrollDelay) then
           Result := [];
       end;
     end;
