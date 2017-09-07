@@ -13377,6 +13377,7 @@ begin
     end;
   finally
     Exclude(FStates, hsLoading);
+    RecalculateHeader();
     Treeview.DoColumnResize(NoColumn);
   end;
 end;
