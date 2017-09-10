@@ -32981,8 +32981,8 @@ begin
 
     if Horizontally then
       // 2) scroll horizontally
-      ScrolledHorizontally := ScrollIntoView(FFocusedColumn, Center);
-
+      // Center only if there is enough space for the focused column, otherwise left align, see issue #397.
+      ScrolledHorizontally := ScrollIntoView(FFocusedColumn, Center and (R.Width <= (ClientWidth - Header.Columns.GetVisibleFixedWidth)));
   end;
 
   Result := ScrolledVertically or ScrolledHorizontally;
@@ -33025,7 +33025,7 @@ begin
   else if not (coFixed in Header.Columns[Column].Options) then
   begin
     if ColumnRight > ClientWidth then
-      NewOffset := FEffectiveOffsetX + (ColumnRight - ClientWidth)
+      NewOffset := FEffectiveOffsetX - (Header.Columns.GetVisibleFixedWidth - ColumnLeft)
     else if (ColumnLeft < Header.Columns.GetVisibleFixedWidth) then
       NewOffset := FEffectiveOffsetX - (Header.Columns.GetVisibleFixedWidth - ColumnLeft);
     if NewOffset <> FEffectiveOffsetX then
