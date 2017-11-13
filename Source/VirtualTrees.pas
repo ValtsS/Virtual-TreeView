@@ -24465,7 +24465,6 @@ begin
       begin
         if ((Node.Parent.CheckState = csCheckedNormal)
              or (Node.Parent.CheckState = csUncheckedNormal))
-            and (not Node.CheckState.IsDisabled())
             and (Node.CheckState <> Node.Parent.CheckState) then
           SetCheckState(Node, Node.Parent.CheckState);
       end;
@@ -32986,7 +32985,7 @@ begin
     if Horizontally then
       // 2) scroll horizontally
       // Center only if there is enough space for the focused column, otherwise left align, see issue #397.
-      ScrolledHorizontally := ScrollIntoView(FFocusedColumn, Center and (R.Width <= (ClientWidth - Header.Columns.GetVisibleFixedWidth)));
+      ScrolledHorizontally := ScrollIntoView(FFocusedColumn, Center and ((R.right-r.Left) <= (ClientWidth - Header.Columns.GetVisibleFixedWidth)));
   end;
 
   Result := ScrolledVertically or ScrolledHorizontally;
