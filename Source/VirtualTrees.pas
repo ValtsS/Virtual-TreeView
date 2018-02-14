@@ -10642,6 +10642,8 @@ var
 
 begin
   Result := InvalidColumn;
+  if (UpdateCount > 0) or (csLoading in Header.TreeView.ComponentState) then
+    exit; // See issue #760
   for I := 0 to Count - 1 do
     if (coVisible in Items[FPositionToIndex[I]].FOptions) and
        ( (not ConsiderAllowFocus) or
@@ -10666,6 +10668,8 @@ var
 
 begin
   Result := InvalidColumn;
+  if (UpdateCount > 0) or (csLoading in Header.TreeView.ComponentState) then
+    exit; // See issue #760
   for I := Count - 1 downto 0 do
     if (coVisible in Items[FPositionToIndex[I]].FOptions) and
        ( (not ConsiderAllowFocus) or
