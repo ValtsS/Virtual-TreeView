@@ -23556,6 +23556,16 @@ var
   DoInvalidate: Boolean;
 
 begin
+  if not IsMouseCursorVisible then
+  begin
+    if Assigned(FCurrentHotNode) then
+    begin
+      InvalidateNode(FCurrentHotNode);
+      FCurrentHotNode := nil;
+    end;
+    Exit;
+  end;//if  not IsMouseCursorVisible
+
   DoInvalidate := False;
   // Get information about the hit.
   GetHitTestInfoAt(X, Y, True, HitInfo);
