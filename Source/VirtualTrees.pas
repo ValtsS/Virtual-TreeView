@@ -11846,7 +11846,7 @@ begin
   // This method is only executed if toAutoChangeScale is set
   Self.Height := MulDiv(FHeight, M, D);
   if not ParentFont then
-    FFont.Size := MulDiv(FFont.Size, M, D);
+    Font.Height := MulDiv(Font.Height, M, D);
   // Scale the columns widths too
   for i := 0 to FColumns.Count - 1 do begin
     Self.FColumns[i].Width := MulDiv(Self.FColumns[i].Width, M, D)
@@ -23543,6 +23543,21 @@ begin
   end;
 end;
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+function IsMouseCursorVisible(): Boolean;
+var
+  CI: TCursorInfo;
+begin
+  CI.cbSize := SizeOf(CI);
+  Result := GetCursorInfo(CI) and (CI.flags = CURSOR_SHOWING);
+  // 0                     Hidden
+  // CURSOR_SHOWING (1)    Visible
+  // CURSOR_SUPPRESSED (2) Touch/Pen Input (Windows 8+)
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/ms648381(v=vs.85).aspx
+end;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 procedure TBaseVirtualTree.HandleHotTrack(X, Y: Integer);
@@ -23590,7 +23605,7 @@ begin
     FCurrentHotColumn := HitInfo.HitColumn;
   end;
 
-  ButtonIsHit := (hiOnItemButtonExact in HitInfo.HitPositions) and (toHotTrack in FOptions.FPaintOptions);
+    ButtonIsHit := (hiOnItemButtonExact in HitInfo.HitPositions);
   if Assigned(FCurrentHotNode) and ((FHotNodeButtonHit <> ButtonIsHit) or DoInvalidate) then
   begin
     FHotNodeButtonHit := ButtonIsHit and (toHotTrack in FOptions.FPaintOptions);
