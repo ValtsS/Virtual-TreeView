@@ -21600,7 +21600,7 @@ begin
     FLastStructureChangeNode := nil;
   if Node = FFocusedNode then
     FFocusedNode := nil;
-    FNextNodeToSelect := Node.Parent;
+    UpdateNextNodeToSelect(Node);
   if Self.UpdateCount = 0 then begin
     // Omit this stuff if the control is in a BeginUpdate/EndUpdate bracket to increase performance
     // We now try
@@ -23125,7 +23125,7 @@ begin
     begin
       if Assigned(FNextNodeToSelect) then
         Selected[FNextNodeToSelect] := True
-      else if Self.Focused then
+      else
         Selected[GetFirstVisible] := True;
       Self.ScrollIntoView(Self.GetFirstSelected, False);
     end;// if nothing selected
