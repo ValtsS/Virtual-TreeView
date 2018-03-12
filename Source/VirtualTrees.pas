@@ -8814,12 +8814,10 @@ begin
           end;
 
         // The percentage values have precedence over the pixel values.
-        TotalFixedMinWidth := IfThen(FMaxWidthPercent > 0,
-                                     Min((ClientWidth * FMaxWidthPercent) div 100, TotalFixedMinWidth),
-                                     TotalFixedMinWidth);
-        TotalFixedMaxWidth := IfThen(FMinWidthPercent > 0,
-                                     Max((ClientWidth * FMinWidthPercent) div 100, TotalFixedMaxWidth),
-                                     TotalFixedMaxWidth);
+        If FMaxWidthPercent > 0 then
+          TotalFixedMinWidth:= Min((ClientWidth * FMaxWidthPercent) div 100, TotalFixedMinWidth);
+        If FMinWidthPercent > 0 then
+          TotalFixedMaxWidth := Max((ClientWidth * FMinWidthPercent) div 100, TotalFixedMaxWidth);
 
         EffectiveMaxWidth := Min(TotalFixedMaxWidth - (GetVisibleFixedWidth - Self.FWidth), FMaxWidth);
         EffectiveMinWidth := Max(TotalFixedMinWidth - (GetVisibleFixedWidth - Self.FWidth), FMinWidth);
