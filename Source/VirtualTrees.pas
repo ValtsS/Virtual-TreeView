@@ -25693,13 +25693,13 @@ begin
   begin
     if BidiMode = bdLeftToRight then
     begin
-      XPos := CellRect.Left;
+      XPos := CellRect.Left + Margin;
       Offset := FIndent;
     end
     else
     begin
       Offset := -Integer(FIndent);
-      XPos := CellRect.Right + Offset;
+      XPos := CellRect.Right - Margin + Offset;
     end;
 
     case FLineMode of
