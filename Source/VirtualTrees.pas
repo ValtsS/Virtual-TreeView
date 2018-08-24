@@ -19602,6 +19602,7 @@ begin
     Changed := InternalAddToSelection(FSingletonNodeArray, 1, False);
     if Changed then
     begin
+      UpdateNextNodeToSelect(Node);
       if (SelectedCount = 1) then
         FocusedNode := Node; // if only one node is selected, make sure the focused node changes with the selected node
       InvalidateNode(Node);
@@ -36306,7 +36307,6 @@ begin
     Self.OnGetText(Self, Node, 0, ttNormal, lSelectedNodeCaption);
     fPreviouslySelected.Add(lSelectedNodeCaption);
   end;//if
-  UpdateNextNodeToSelect(Node);
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
