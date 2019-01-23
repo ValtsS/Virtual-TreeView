@@ -5944,7 +5944,7 @@ begin
       TranslateMessage(Msg);
       DispatchMessage(Msg);
     end;
-    CheckSynchronize();// If this call makes problems consider doing it only when needed by counting Synchronize() calls in a threadsafe counter
+//    CheckSynchronize();// If this call makes problems consider doing it only when needed by counting Synchronize() calls in a threadsafe counter
   end;
 end;
 
