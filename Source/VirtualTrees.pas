@@ -462,9 +462,11 @@ interface
 {$I VTConfig.inc}
 
 // For some things to work we need code, which is classified as being unsafe for .NET.
-{$warn UNSAFE_TYPE off}
-{$warn UNSAFE_CAST off}
-{$warn UNSAFE_CODE off}
+{$ifdef COMPILER_7_UP}
+  {$warn UNSAFE_TYPE off}
+  {$warn UNSAFE_CAST off}
+  {$warn UNSAFE_CODE off}
+{$endif COMPILER_7_UP}
 
 {$ifdef COMPILER_12_UP}
   {$WARN IMPLICIT_STRING_CAST       OFF}
@@ -485,7 +487,12 @@ uses
   {$endif COMPILER_10_UP}
   Messages, SysUtils, Classes, Graphics, Controls, Forms, ImgList, ActiveX, StdCtrls, Menus, Printers,
   CommCtrl,   // image lists, common controls tree structures
-  Themes, UxTheme
+  {$ifdef COMPILER_7_UP}
+  Themes,
+  {$else}
+  ThemeSrv, TmSchema,
+  {$endif COMPILER_7_UP}
+  UxTheme
   {$ifdef TntSupport}
     , TntStdCtrls       // Unicode aware inplace editor.
   {$endif TntSupport}
@@ -1508,7 +1515,9 @@ type
     procedure HandleClick(P: TPoint; Button: TMouseButton; Force, DblClick: Boolean); virtual;
     procedure IndexChanged(OldIndex, NewIndex: Integer);
     procedure InitializePositionArray;
+{$ifdef COMPILER_7_UP}
     procedure Notify(Item: TCollectionItem; Action: TCollectionNotification); override;
+{$endif COMPILER_7_UP}
     procedure ReorderColumns(RTL: Boolean);
     procedure Update(Item: TCollectionItem); override;
     procedure UpdatePositions(Force: Boolean = False);
@@ -3851,9 +3860,11 @@ type
     property OnStateChange;
     property OnStructureChange;
     property OnUpdating;
+{$ifdef COMPILER_6_UP}
     {$if CompilerVersion>=21}
     property OnCanResize;
     {$ifend}
+{$endif COMPILER_6_UP}
   end;
 
   TVTDrawHintEvent = procedure(Sender: TBaseVirtualTree; HintCanvas: TCanvas; Node: PVirtualNode; R: TRect;
@@ -4154,7 +4165,11 @@ uses
   {$ifdef UNICODE}
   AnsiStrings,
   {$endif UNICODE}
+{$ifdef COMPILER_6_UP}
   StrUtils,
+{$else}
+  StrUtils_D5, TNTSystem,
+{$endif COMPILER_6_UP}
   VTAccessibilityFactory;  // accessibility helper class
 
 resourcestring
@@ -6200,8 +6215,11 @@ begin
     // Create an event used to trigger our worker thread when something is to do.
     WorkEvent := CreateEvent(nil, False, False, nil);
     if WorkEvent = 0 then
+{$ifdef COMPILER_6_UP}
       RaiseLastOSError;
-
+{$else}
+      RaiseLastWin32Error;
+{$endif}
     // Create worker thread, initialize it and send it to its wait loop.
     WorkerThread := TWorkerThread.Create(False);
   end;
@@ -10408,7 +10426,7 @@ begin
 end;
 
 //----------------------------------------------------------------------------------------------------------------------
-
+{$ifdef COMPILER_7_UP}
 procedure TVirtualTreeColumns.Notify(Item: TCollectionItem; Action: TCollectionNotification);
 
 begin
@@ -10417,7 +10435,7 @@ begin
       if not (csLoading in ComponentState) and (FFocusedColumn = Item.Index) then
         FFocusedColumn := NoColumn;
 end;
-
+{$endif COMPILER_7_UP}
 //----------------------------------------------------------------------------------------------------------------------
 
 procedure TVirtualTreeColumns.ReorderColumns(RTL: Boolean);
@@ -26049,7 +26067,9 @@ begin
   FPanningImage.LoadFromResourceName(HInstance, ImageName);
   SetWindowRgn(FPanningWindow, CreateClipRegion, False);
 
-  SetWindowLong(FPanningWindow, GWL_WNDPROC, Integer(Classes.MakeObjectInstance(PanningWindowProc)));
+
+  SetWindowLong(FPanningWindow, GWL_WNDPROC, 
+	Integer({$ifdef COMPILER_6_UP}Classes.{$endif COMPILER_6_UP}MakeObjectInstance(PanningWindowProc)));
   ShowWindow(FPanningWindow, SW_SHOWNOACTIVATE);
 
   // Setup the panscroll timer and capture all mouse input.
@@ -26079,7 +26099,7 @@ begin
     Instance := Pointer(GetWindowLong(FPanningWindow, GWL_WNDPROC));
     DestroyWindow(FPanningWindow);
     if Instance <> @DefWindowProc then
-      Classes.FreeObjectInstance(Instance);
+      {$ifdef COMPILER_6_UP}Classes.{$endif COMPILER_6_UP}FreeObjectInstance(Instance);
     FPanningWindow := 0;
     FPanningImage.Free;
     FPanningImage := nil;
