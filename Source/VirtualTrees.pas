@@ -30736,16 +30736,11 @@ var
   NewNodeHeight: Integer;
 
 begin
-  if not (vsHeightMeasured in Node.States) {$if CompilerVersion < 20}and (MainThreadId = GetCurrentThreadId){$ifend} then
+  if not (vsHeightMeasured in Node.States) and (MainThreadId = GetCurrentThreadId) then
   begin
     Include(Node.States, vsHeightMeasured);
     if (toVariableNodeHeight in FOptions.FMiscOptions) then begin
       NewNodeHeight := Node.NodeHeight;
-      {$if CompilerVersion > 20} // Anonymous methods help to make this thread safe easily.
-      if (MainThreadId <> GetCurrentThreadId) then
-        TThread.Synchronize(nil, procedure begin DoMeasureItem(Canvas, Node, NewNodeHeight) end)
-      else
-      {$ifend}
         DoMeasureItem(Canvas, Node, NewNodeHeight);
       if NewNodeHeight <> Node.NodeHeight then
         SetNodeHeight(Node, NewNodeHeight);
