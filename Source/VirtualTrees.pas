@@ -24763,7 +24763,7 @@ type
 procedure DrawImage(ImageList: TCustomImageList; Index: Integer; Canvas: TCanvas; X, Y: Integer; Style: Cardinal; Enabled: Boolean);
 
   procedure DrawDisabledImage(ImageList: TCustomImageList; Canvas: TCanvas; X, Y, Index: Integer);
-  {$if CompilerVersion >= 18}
+  {$ifdef COMPILER_15_UP}
   var
     Params: TImageListDrawParams;
   begin
@@ -24779,7 +24779,7 @@ procedure DrawImage(ImageList: TCustomImageList; Index: Integer; Canvas: TCanvas
   {$else}
   begin
     TCustomImageListCast(ImageList).DoDraw(Index, Canvas, X, Y, Style, False);
-  {$ifend}
+  {$endif}
   end;
 
 begin
