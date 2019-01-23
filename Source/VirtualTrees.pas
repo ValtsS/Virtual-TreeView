@@ -3819,6 +3819,8 @@ procedure GetStringDrawRect(DC: HDC; const S: UnicodeString; var Bounds: TRect; 
 function WrapString(DC: HDC; const S: UnicodeString; const Bounds: TRect; RTL: Boolean;
   DrawFormat: Cardinal): UnicodeString;
 
+Procedure SetOptimalNodeHeight(Tree:TBaseVirtualTree; update_nodes_too:boolean; nochildren:boolean; extra_scale:double = 1);
+
 //----------------------------------------------------------------------------------------------------------------------
 
 implementation
@@ -3841,6 +3843,68 @@ uses
   StrUtils_D5, TNTSystem,
 {$endif COMPILER_6_UP}
   VTAccessibilityFactory;  // accessibility helper class
+
+
+Procedure SetOptimalNodeHeight(Tree:TBaseVirtualTree; update_nodes_too:boolean; nochildren:boolean; extra_scale:double);
+var nd:PVirtualNode;
+    delta, dx, iu:integer;
+begin
+  iu:=0;
+   try
+
+     Tree.Canvas.Font.Assign(Tree.Font);
+
+     dx:=Max(16, Tree.Canvas.TextHeight(#186+'|A1')+3);
+     dx:=round(dx*extra_scale);
+     delta:=dx - Tree.DefaultNodeHeight;
+     Tree.DefaultNodeHeight:=dx;
+   except
+     try
+     dx:=round(16*Screen.PixelsPerInch/96);
+     delta:=dx - Tree.DefaultNodeHeight;
+     Tree.DefaultNodeHeight:=dx;
+     except
+      delta:=dx - Tree.DefaultNodeHeight;
+      Tree.DefaultNodeHeight:=16;
+      dx:=16;
+     end;
+   end;
+
+
+   if update_nodes_too then begin
+
+     nd:=Tree.GetFirst;
+
+      while Assigned(nd) do begin
+
+        if nochildren then begin
+         nd.NodeHeight:=dx;
+         nd.TotalHeight:=dx;
+
+         if nd.Parent<>nil then begin
+          inc(nd.Parent.TotalHeight, delta);
+         end;
+         inc(iu);
+        end else Tree.SetNodeHeight(nd, dx);
+
+       nd:=Tree.GetNext(nd);
+      end;
+
+   end;
+
+
+  Tree.InvalidateCache;
+
+   Tree.ValidateCache;
+   Tree.InvalidateToBottom(Tree.GetFirst);
+   Tree.UpdateScrollBars(True);
+
+  Tree.Invalidate;
+
+  Tree.Header.Height:=round(dx*1.2);
+
+end;
+
 
 resourcestring
   // Localizable strings.
